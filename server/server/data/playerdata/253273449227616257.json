@@ -1,0 +1,56 @@
+{
+  "collection": [
+    {
+      "name": "Charmander",
+      "dexNumber": 2,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "pokemon/charmander.png",
+      "fallbackImage": "src/assets/pokemon/charmander.png",
+      "amount": 2
+    },
+    {
+      "name": "Thievul",
+      "dexNumber": 9,
+      "rarity": "wild",
+      "odds": 200,
+      "power": 0,
+      "image": "pokemon/thievul.png",
+      "type": "wild",
+      "fallbackImage": "src/assets/pokemon/thievul.png",
+      "amount": 2
+    },
+    {
+      "name": "Eevee",
+      "dexNumber": 10,
+      "rarity": "uncommon",
+      "odds": 50,
+      "power": 50,
+      "image": "pokemon/eevee.png",
+      "fallbackImage": "src/assets/pokemon/eevee.png",
+      "amount": 1
+    },
+    {
+      "name": "Weedle",
+      "dexNumber": 7,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "pokemon/weedle.png",
+      "fallbackImage": "src/assets/pokemon/weedle.png",
+      "amount": 1
+    },
+    {
+      "name": "Squirtle",
+      "dexNumber": 3,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "/pokemon/squirtle.png",
+      "amount": 1
+    }
+  ],
+  "rubies": 120,
+  "avatarDexNumber": 2
+}

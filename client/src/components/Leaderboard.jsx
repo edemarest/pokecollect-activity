@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getLeaderboard } from "../utils/api";
+import dexToName from "../data/dexToName.json";
 
 // Simple error boundary for debugging
 class ErrorBoundary extends React.Component {
@@ -22,7 +23,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default function Leaderboard({ playerUserId, collection }) {
+export default function Leaderboard({ playerUserId, collection, showAvatars, usernamesMap }) {
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
@@ -43,33 +44,46 @@ export default function Leaderboard({ playerUserId, collection }) {
 
   return (
     <ErrorBoundary>
-      <div style={{ background: "#181818", borderRadius: 12, padding: 16, minWidth: 260, maxWidth: 320, boxShadow: "0 2px 12px #0006", marginBottom: 24 }}>
-        <h3 style={{ margin: 0, marginBottom: 12, fontSize: 18 }}>Leaderboard</h3>
+      <div style={{ background: "#181818", borderRadius: 12, padding: 16, minWidth: 260, maxWidth: 400, boxShadow: "0 2px 12px #0006", margin: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ margin: 0, marginBottom: 12, fontSize: 18, textAlign: 'center', letterSpacing: 1 }}>Leaderboard</h3>
         {players.length === 0 ? (
           <div style={{ color: "#aaa" }}>No players yet.</div>
         ) : (
-          <ol style={{ padding: 0, margin: 0, listStyle: "none" }}>
+          <ol style={{ padding: 0, margin: 0, listStyle: "none", flex: 1 }}>
             {players.map((p, i) => (
               <li key={p.userId} style={{
                 background: p.userId === playerUserId ? "#333" : "transparent",
                 borderRadius: 8,
-                padding: "6px 8px",
-                marginBottom: 4,
+                padding: "8px 8px",
+                marginBottom: 6,
                 display: "flex",
                 alignItems: "center",
-                fontWeight: p.userId === playerUserId ? "bold" : "normal"
+                fontWeight: p.userId === playerUserId ? "bold" : "normal",
+                gap: 10
               }}>
                 <span style={{ width: 22, display: "inline-block", textAlign: "right", marginRight: 8 }}>{i + 1}.</span>
-                {/* Placeholder avatar */}
-                <span style={{ width: 32, height: 32, display: "inline-block", marginRight: 8 }}>
-                  {p.avatarDexNumber ? (
-                    <img src={collection.find(c => c.dexNumber === p.avatarDexNumber)?.image || ""} alt="avatar" style={{ width: 28, height: 28, borderRadius: 6, border: "2px solid #4caf50" }} />
+                {/* Avatar */}
+                <span style={{ width: 36, height: 36, display: "inline-block", marginRight: 8 }}>
+                  {showAvatars && (p.avatarImage || p.avatarDexNumber) ? (
+                    <img
+                      src={
+                        p.avatarImage
+                          ? p.avatarImage
+                          : p.avatarDexNumber
+                            ? `pokemon/${dexToName[p.avatarDexNumber] || "unknown"}.png`
+                            : undefined
+                      }
+                      alt="avatar"
+                      style={{ width: 32, height: 32, borderRadius: 8, border: "2px solid #4caf50", background: '#222' }}
+                    />
                   ) : (
-                    <span style={{ color: "#888" }}>?</span>
+                    <span style={{ color: "#888", fontSize: 24 }}>?</span>
                   )}
                 </span>
-                <span style={{ flex: 1 }}>{p.userId}</span>
-                <span style={{ marginLeft: 8, color: "#4caf50" }}>{p.power}</span>
+                <span style={{ flex: 1, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {(usernamesMap && usernamesMap[p.userId]) ? usernamesMap[p.userId] : p.userId}
+                </span>
+                <span style={{ marginLeft: 8, color: "#4caf50", fontWeight: 600, fontSize: 15 }}>{p.power}</span>
               </li>
             ))}
           </ol>

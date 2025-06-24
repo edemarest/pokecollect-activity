@@ -2,82 +2,92 @@
   {
     "name": "Bulbasaur",
     "dexNumber": 1,
+    "dexName": "bulbasaur",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/bulbasaur.png"
+    "image": "/pokemon/bulbasaur.png"
   },
   {
     "name": "Charmander",
-    "dexNumber": 2,
+    "dexNumber": 4,
+    "dexName": "charmander",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/charmander.png"
+    "image": "/pokemon/charmander.png"
   },
   {
     "name": "Squirtle",
-    "dexNumber": 3,
+    "dexNumber": 7,
+    "dexName": "squirtle",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/squirtle.png"
+    "image": "/pokemon/squirtle.png"
   },
   {
     "name": "Pidgey",
-    "dexNumber": 4,
+    "dexNumber": 16,
+    "dexName": "pidgey",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/pidgey.png"
+    "image": "/pokemon/pidgey.png"
   },
   {
     "name": "Rattata",
-    "dexNumber": 5,
+    "dexNumber": 19,
+    "dexName": "rattata",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/rattata.png"
+    "image": "/pokemon/rattata.png"
   },
   {
     "name": "Caterpie",
-    "dexNumber": 6,
+    "dexNumber": 10,
+    "dexName": "caterpie",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/caterpie.png"
+    "image": "/pokemon/caterpie.png"
   },
   {
     "name": "Weedle",
-    "dexNumber": 7,
+    "dexNumber": 13,
+    "dexName": "weedle",
     "rarity": "common",
     "odds": 10,
     "power": 10,
-    "image": "src/assets/pokemon/weedle.png"
+    "image": "/pokemon/weedle.png"
   },
   {
     "name": "Pikachu",
-    "dexNumber": 8,
+    "dexNumber": 25,
+    "dexName": "pikachu",
     "rarity": "uncommon",
     "odds": 50,
     "power": 50,
-    "image": "src/assets/pokemon/pikachu.png"
+    "image": "/pokemon/pikachu.png"
   },
   {
     "name": "Thievul",
     "dexNumber": 9,
+    "dexName": "thievul",
     "rarity": "wild",
     "odds": 200,
     "power": 0,
-    "image": "src/assets/pokemon/thievul.png",
+    "image": "/pokemon/thievul.png",
     "type": "wild"
   },
   {
     "name": "Eevee",
-    "dexNumber": 10,
+    "dexNumber": 133,
+    "dexName": "eevee",
     "rarity": "uncommon",
     "odds": 50,
     "power": 50,
-    "image": "src/assets/pokemon/eevee.png"
+    "image": "/pokemon/eevee.png"
   }
 ]

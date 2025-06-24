@@ -7,6 +7,8 @@ console.log("main.jsx loaded");
 console.log("window.location.search:", window.location.search);
 console.log("Discord Client ID (top):", import.meta.env.VITE_DISCORD_CLIENT_ID);
 console.log("All env:", import.meta.env);
+console.log("DiscordNative:", window.DiscordNative);
+console.log("DiscordActivity:", window.DiscordActivity);
 
 // Only initialize DiscordSDK if running inside Discord (frame_id present)
 if (window.location.search.includes("frame_id")) {
@@ -26,54 +28,72 @@ if (window.location.search.includes("frame_id")) {
   });
 
   async function setupDiscordSdk() {
-    console.log("setupDiscordSdk called");
-    console.log("Before discordSdk.ready()");
-    await discordSdk.ready();
-    console.log("After discordSdk.ready()");
-    console.log("Discord Client ID:", import.meta.env.VITE_DISCORD_CLIENT_ID);
-
-    // Authorize with Discord Client
-    console.log("Before authorize");
-    const { code } = await discordSdk.commands.authorize({
-      client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
-      response_type: "code",
-      state: "",
-      prompt: "none",
-      scope: ["identify", "guilds", "applications.commands"],
-    });
-    console.log("After authorize, code:", code);
-
-    console.log("Calling /api/token with code:", code);
-    // Retrieve an access_token from your activity's server
-    console.log("Before fetch /api/token");
-    const response = await fetch("/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ code }),
-    });
-    console.log("After fetch /api/token");
-    if (!response.ok) {
-      console.error("/api/token failed", response.status);
-      throw new Error("/api/token failed: " + response.status);
-    }
-    let access_token = null;
     try {
-      const json = await response.json();
-      access_token = json.access_token;
-    } catch (e) {
-      console.error("Failed to parse /api/token response as JSON", e);
-      throw new Error("Invalid JSON from /api/token");
-    }
+      console.log("setupDiscordSdk called");
+      console.log("Before discordSdk.ready()");
+      await discordSdk.ready();
+      console.log("After discordSdk.ready()");
+      console.log("Discord Client ID:", import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-    // Authenticate with Discord client (using the access_token)
-    auth = await discordSdk.commands.authenticate({
-      access_token,
-    });
+      // Authorize with Discord Client
+      console.log("Before authorize");
+      const { code } = await discordSdk.commands.authorize({
+        client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
+        response_type: "code",
+        state: "",
+        prompt: "none",
+        scope: ["identify", "guilds", "applications.commands"],
+      });
+      console.log("After authorize, code:", code);
 
-    if (auth == null) {
-      throw new Error("Authenticate command failed");
+      console.log("Calling /api/token with code:", code);
+      // Retrieve an access_token from your activity's server
+      console.log("Before fetch /api/token");
+      // Use Discord-proxied URL if running as a Discord Activity
+      const isDiscordActivity = window.location.search.includes("frame_id");
+      const TOKEN_URL = isDiscordActivity
+        ? `https://${import.meta.env.VITE_DISCORD_CLIENT_ID}.discordsays.com/.proxy/api/token`
+        : "/api/token";
+      const response = await fetch(TOKEN_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      });
+      console.log("After fetch /api/token", response);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("/api/token failed", response.status, text);
+        throw new Error("/api/token failed: " + response.status + " " + text);
+      }
+      let access_token = null;
+      try {
+        const json = await response.json();
+        console.log("Token response JSON:", json);
+        access_token = json.access_token;
+      } catch (e) {
+        console.error("Failed to parse /api/token response as JSON", e);
+        throw new Error("Invalid JSON from /api/token");
+      }
+      if (!access_token) {
+        throw new Error("No access token received from /api/token");
+      }
+      // Authenticate with Discord client (using the access_token)
+      try {
+        auth = await discordSdk.commands.authenticate({
+          access_token,
+        });
+      } catch (e) {
+        console.error("discordSdk.commands.authenticate failed", e);
+        throw e;
+      }
+      if (auth == null) {
+        throw new Error("Authenticate command failed");
+      }
+    } catch (err) {
+      console.error("setupDiscordSdk error:", err);
+      document.body.innerHTML = `<div style="color:red;padding:40px;">Discord Activity failed to load: ${err && err.message ? err.message : JSON.stringify(err)}</div>`;
     }
   }
 } else {
@@ -86,30 +106,4 @@ if (window.location.search.includes("frame_id")) {
     </React.StrictMode>
   );
 }
-
-// Express route to handle token exchange
-app.post("/api/token", async (req, res) => {
-  try {
-    const response = await fetch(`https://discord.com/api/oauth2/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        client_id: process.env.VITE_DISCORD_CLIENT_ID,
-        client_secret: process.env.DISCORD_CLIENT_SECRET,
-        grant_type: "authorization_code",
-        code: req.body.code,
-        redirect_uri: "https://127.0.0.1", // <--- must match exactly!
-      }),
-    });
-    const data = await response.json();
-    if (!data.access_token) {
-      console.error("Discord token error:", data);
-    }
-    res.send(data);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch Discord access token" });
-  }
-});
 

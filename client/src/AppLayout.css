@@ -1,0 +1,642 @@
+/* AppLayout.css: Responsive, collapsible sidebars for Pokecollect */
+:root {
+  --topbar-height: 60px;
+  --sidebar-width: 340px;
+  --sidebar-width-mobile: 80vw;
+  --sidebar-bg: #181818;
+  --main-bg: #222;
+  --collection-grid-gap: 16px;
+  --collection-card-size: 120px;
+  --base-font-size: 18px;
+  --leaderboard-width: 340px;
+  --leaderboard-width-mobile: 80vw;
+}
+
+html, body, #root, #app {
+  height: 100dvh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--main-bg);
+  box-sizing: border-box;
+  font-size: var(--base-font-size);
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100vw;
+  min-height: 0;
+  min-width: 0;
+  background: var(--main-bg);
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Topbar: currency bar always centered */
+.topbar {
+  height: var(--topbar-height);
+  width: 100%;
+  min-width: 0;
+  background: var(--sidebar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 2px 8px #0006;
+  font-size: 1.1em;
+}
+.topbar > * {
+  margin: 0 auto;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.layout-row {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  min-width: 0;
+  min-height: 0;
+  height: calc(100dvh - var(--topbar-height));
+  width: 100%;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+/* Collection Toggle: always flush left */
+.collection-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 0 18px 18px 0;
+  padding: 18px 18px 18px 10px;
+  font-size: 1.1em;
+  cursor: pointer;
+  box-shadow: 2px 0 8px #0006;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+  opacity: 0.92;
+  margin: 0;
+}
+.collection-toggle:hover {
+  background: #444;
+  opacity: 1;
+}
+.collection-arrow-icon {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+}
+
+/* Collapsible Collection Sidebar */
+.collection-sidebar {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  height: calc(100dvh - var(--topbar-height));
+  width: 0;
+  background: var(--sidebar-bg);
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: width 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+  z-index: 120;
+  box-shadow: none;
+  display: none; /* Hide completely when closed */
+  flex-direction: column;
+  pointer-events: none;
+}
+.collection-sidebar.open {
+  display: flex;
+  width: var(--sidebar-width);
+  box-shadow: 2px 0 12px #0008;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .collection-sidebar.open {
+    width: var(--sidebar-width-mobile);
+    min-width: 180px;
+    max-width: 95vw;
+  }
+}
+
+.collection-content {
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;
+  padding: 16px 12px 18px 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 18px 12px 18px;
+  border-bottom: 1px solid #333;
+  font-size: 1.2em;
+}
+.collection-header-title {
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  margin-top: 0;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* Collapsible Leaderboard Sidebar */
+.leaderboard-sidebar {
+  position: fixed;
+  top: var(--topbar-height);
+  right: 0;
+  height: calc(100dvh - var(--topbar-height));
+  width: var(--leaderboard-width);
+  min-width: 180px;
+  max-width: 95vw;
+  background: var(--sidebar-bg);
+  box-shadow: -2px 0 12px #0008;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-y: auto;
+  transition: width 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+  pointer-events: auto;
+}
+.leaderboard-sidebar.closed {
+  width: 0;
+  min-width: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .leaderboard-sidebar {
+    width: var(--leaderboard-width-mobile);
+    min-width: 120px;
+    max-width: 95vw;
+  }
+}
+
+.leaderboard-toggle {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 18px 0 0 18px;
+  padding: 18px 10px 18px 18px;
+  font-size: 1.1em;
+  cursor: pointer;
+  box-shadow: -2px 0 8px #0006;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+  opacity: 0.92;
+}
+.leaderboard-toggle:hover {
+  background: #444;
+  opacity: 1;
+}
+.leaderboard-arrow-icon {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+}
+
+/* Center main roll UI absolutely in viewport, not offset by sidebars */
+.center-main {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--topbar-height);
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  z-index: 1;
+  padding: 0 24px;
+  pointer-events: none; /* so sidebars can overlay */
+}
+.center-main > * {
+  pointer-events: auto;
+}
+
+/* Leaderboard entry text handling */
+.leaderboard-sidebar .leaderboard-entry {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 12px;
+}
+
+/* Tighter, even grid for collection cards */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--collection-card-size), 1fr));
+  gap: 12px 12px;
+  width: 100%;
+  justify-items: center;
+  align-items: start;
+  margin: 0;
+  align-content: start;
+  /* New: sticky/fixed height and scrollable */
+  max-height: 340px;
+  min-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  :root {
+    --sidebar-width: 260px;
+    --leaderboard-width: 220px;
+    --collection-card-size: 100px;
+    --base-font-size: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --sidebar-width: 80vw;
+    --leaderboard-width: 60vw;
+    --collection-card-size: 80px;
+    --base-font-size: 15px;
+  }
+  .collection-toggle, .leaderboard-toggle {
+    font-size: 15px;
+    padding: 10px 10px 10px 6px;
+  }
+}
+
+/* Sidebar toggles (vertical buttons) */
+.sidebar-toggles {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sidebar-toggle-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px 14px 10px;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 2px 0 8px #0006;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s;
+  opacity: 0.92;
+  margin: 0;
+  outline: none;
+}
+.sidebar-toggle-btn.active, .sidebar-toggle-btn:hover {
+  background: #444;
+  color: #ffe066;
+  opacity: 1;
+}
+.sidebar-toggle-label {
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+/* Shop placeholder styling */
+.shop-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #bbb;
+}
+.shop-placeholder h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* Hide scrollbars for a cleaner look */
+.collection-content::-webkit-scrollbar,
+.leaderboard-sidebar::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+#app {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  text-align: initial !important;
+}
+
+/* Sidebar tab toggles attached to right edge of sidebar */
+.sidebar-tab-toggles {
+  position: absolute;
+  top: 32px;
+  right: -56px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+.sidebar-tab-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px 16px 16px 8px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3em;
+  box-shadow: 2px 0 8px #0006;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  opacity: 0.95;
+  outline: none;
+  border-right: 2px solid #444;
+}
+.sidebar-tab-btn.active, .sidebar-tab-btn:hover {
+  background: #ffe066;
+  color: #222;
+  box-shadow: 4px 0 16px #ffe06644;
+  border-right: 2px solid #ffe066;
+  opacity: 1;
+}
+
+/* Sidebar menu toggles above the collection title, block layout */
+.sidebar-menu-toggles--block {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 18px;
+  margin-top: 0;
+}
+.collection-header-title {
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+/* Sidebar menu toggles above the collection title */
+.sidebar-menu-toggles {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.sidebar-menu-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  box-shadow: 0 1px 4px #0004;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  opacity: 0.95;
+  outline: none;
+  margin: 0;
+}
+.sidebar-menu-btn.active, .sidebar-menu-btn:hover {
+  background: #ffe066;
+  color: #222;
+  box-shadow: 0 2px 8px #ffe06644;
+  opacity: 1;
+}
+
+/* Condensed Pokémon info panel at bottom of collection sidebar */
+.pokemon-info-panel {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #232323;
+  border-top: 1.5px solid #333;
+  box-shadow: 0 -2px 12px #0008;
+  z-index: 30;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  animation: fadeInPanel 0.18s cubic-bezier(.4,2,.6,1);
+}
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pokemon-info-panel-content {
+  width: 100%;
+  max-width: 340px;
+  padding: 16px 18px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pokemon-info-main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+.pokemon-info-img {
+  width: 56px;
+  height: 56px;
+  background: #181818;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0006;
+}
+.pokemon-info-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pokemon-info-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pokemon-info-dex {
+  font-size: 0.95em;
+  color: #aaa;
+  font-weight: 500;
+}
+.pokemon-info-rarity {
+  font-size: 0.98em;
+  color: #ffe066;
+  font-weight: 500;
+}
+.pokemon-info-amount {
+  font-size: 0.98em;
+  color: #bbb;
+}
+.pokemon-info-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.pokemon-info-sell-input {
+  width: 38px;
+  margin-left: 6px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background: #222;
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 1em;
+}
+.pokemon-info-sell-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 16px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.pokemon-info-sell-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.pokemon-info-avatar-btn {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 16px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.pokemon-info-avatar-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.pokemon-info-close-btn {
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 16px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.pokemon-info-close-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.selected-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.selected-dot {
+  display: inline-block;
+  margin-left: 6px;
+  color: #ffe066;
+  font-size: 1.2em;
+  vertical-align: middle;
+  filter: drop-shadow(0 0 4px #ffe066cc);
+  animation: selectedDotPulse 1.2s infinite cubic-bezier(.4,2,.6,1);
+}
+@keyframes selectedDotPulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.18); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 900px) {
+  .pokemon-info-panel_content {
+    max-width: 95vw;
+    padding: 12px 8px 10px 8px;
+  }
+  .pokemon-info-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Highlight selected Pokémon card in collection grid */
+.collection-card.selected {
+  position: relative;
+  z-index: 2;
+  /* Remove border and box-shadow for selection */
+  background: #333 !important;
+}
+.collection-card.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background: rgba(255, 224, 102, 0.18); /* soft yellow overlay */
+  box-shadow: none;
+  opacity: 1;
+  transition: background 0.18s;
+}

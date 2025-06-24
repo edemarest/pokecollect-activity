@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import CurrencyBar from "./components/CurrencyBar";
 import RollScreen from "./components/RollScreen";
 import Collection from "./components/Collection";
-import PokemonDetailModal from "./components/PokemonDetailModal";
+import PokemonInfoPanel from "./components/PokemonInfoPanel";
 import Leaderboard from "./components/Leaderboard";
-import { getPlayerState, setPlayerState } from "./utils/api";
-// Temporary: import Pokémon data for local testing
+import { getPlayerState, setPlayerState, patchPlayerState } from "./utils/api";
 import pokemonData from "../data/pokemon.json";
+import './App.css';
+import './AppLayout.css';
 
-export default function App() {
+export default function App({ discordSdk, auth }) {
   // State for rolled Pokémon, collection, power, rubies, avatar
   const [rolledPokemon, setRolledPokemon] = useState(null);
   const [collection, setCollection] = useState([]);
@@ -20,16 +21,20 @@ export default function App() {
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
   const [discordUsername, setDiscordUsername] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  // Add sidebar state for toggles
+  const [sidebarTab, setSidebarTab] = useState('collection'); // 'collection' or 'shop'
+  const [collectionOpen, setCollectionOpen] = useState(true); // open by default
 
   // Get Discord user info via Activity SDK
   useEffect(() => {
+    if (auth && auth.user) {
+      setUserId(auth.user.id);
+      setDiscordUsername(auth.user.username + (auth.user.discriminator ? `#${auth.user.discriminator}` : ""));
+      return;
+    }
     async function getDiscordUser() {
       console.log("[DiscordUser] Checking for Discord SDK...");
-      // TEMP: Force fallback for Discord testing
-      setUserId("user1");
-      setDiscordUsername("YourDiscord#1234");
-      return;
-      // --- Remove the above lines to restore Discord SDK logic ---
       // Check if running in Discord Activity
       if (window.DiscordNative && window.DiscordNative.activity) {
         window.DiscordNative.activity.getCurrentUser((user) => {
@@ -42,7 +47,6 @@ export default function App() {
           }
         });
       } else if (window.DiscordActivity && window.DiscordActivity.getCurrentUser) {
-        // Some SDKs use DiscordActivity
         window.DiscordActivity.getCurrentUser().then(user => {
           console.log("[DiscordUser] DiscordActivity.getCurrentUser", user);
           if (user && user.id) {
@@ -59,10 +63,11 @@ export default function App() {
         // Fallback: running in browser for dev
         setUserId("user1");
         setDiscordUsername("YourDiscord#1234");
+        setError("Discord SDK not detected. Using fallback user. If you are in Discord, make sure the Activity SDK is available.");
       }
     }
     getDiscordUser();
-  }, []);
+  }, [auth]);
 
   // Load state from backend when userId is available
   useEffect(() => {
@@ -73,8 +78,8 @@ export default function App() {
       try {
         const data = await getPlayerState(userId);
         console.log("Fetched player state:", data);
-        setCollection(data.collection || []);
-        setRubies(data.rubies || 0);
+        setCollection(Array.isArray(data.collection) ? data.collection : []);
+        setRubies(typeof data.rubies === 'number' ? data.rubies : 0);
         setAvatarDexNumber(data.avatarDexNumber || null);
       } catch (err) {
         console.error("Failed to load player data:", err);
@@ -86,17 +91,6 @@ export default function App() {
     fetchState();
   }, [userId]);
 
-  // Debounced save to backend whenever collection, rubies, or avatar changes
-  useEffect(() => {
-    if (loading || !userId) return; // Don't save while loading or missing user
-    const timeout = setTimeout(() => {
-      setPlayerState(userId, { collection, rubies, avatarDexNumber }).catch(() => {
-        setError("Failed to save player data.");
-      });
-    }, 400); // 400ms debounce
-    return () => clearTimeout(timeout);
-  }, [collection, rubies, avatarDexNumber, loading, userId]);
-
   // Simulate a roll (randomly pick from data)
   function handleRoll() {
     const idx = Math.floor(Math.random() * pokemonData.length);
@@ -104,35 +98,62 @@ export default function App() {
   }
 
   // Claim the rolled Pokémon
-  function handleClaim() {
-    if (!rolledPokemon) return;
+  async function handleClaim() {
+    if (!rolledPokemon || isSaving) return;
+    setIsSaving(true);
+    let updatedCollection;
     setCollection((prev) => {
       const idx = prev.findIndex((p) => p.dexNumber === rolledPokemon.dexNumber);
       let updated;
       if (idx !== -1) {
-        // Already owned, increment amount
         updated = [...prev];
         updated[idx] = { ...updated[idx], amount: (updated[idx].amount || 1) + 1 };
       } else {
-        // New Pokémon
         updated = [...prev, { ...rolledPokemon, amount: 1 }];
       }
-      // If no avatar set, set to first Pokémon caught
       if (!avatarDexNumber) {
         setAvatarDexNumber(rolledPokemon.dexNumber);
       }
+      updatedCollection = updated;
       return updated;
     });
     setRolledPokemon(null);
+    if (userId) {
+      try {
+        await patchPlayerState(userId, { collection: updatedCollection });
+      } catch (e) {
+        setError("Failed to update collection on server.");
+      }
+    }
+    setIsSaving(false);
   }
 
   // Discard the rolled Pokémon
-  function handleDiscard() {
+  async function handleDiscard() {
     setRolledPokemon(null);
+    // No backend update needed for discard, as nothing changes
+  }
+
+  // Set avatar from modal
+  async function handleSetAvatar() {
+    if (!selectedPokemon || !userId || isSaving) return;
+    setIsSaving(true);
+    setAvatarDexNumber(selectedPokemon.dexNumber);
+    try {
+      await patchPlayerState(userId, {
+        avatarDexNumber: selectedPokemon.dexNumber,
+        avatarImage: selectedPokemon.image // Save image path as well
+      });
+    } catch (e) {
+      setError("Failed to update avatar on server.");
+    }
+    setIsSaving(false);
   }
 
   // Sell Pokémon from modal
-  function handleSell(amount) {
+  async function handleSell(amount) {
+    if (isSaving) return;
+    setIsSaving(true);
     setCollection((prev) => {
       const idx = prev.findIndex((p) => p.dexNumber === selectedPokemon.dexNumber);
       if (idx === -1) return prev;
@@ -142,22 +163,18 @@ export default function App() {
         updated[idx] = { ...updated[idx], amount: newAmount };
       } else {
         updated.splice(idx, 1);
-        // If avatar was this Pokémon, reset avatar to another or null
         if (avatarDexNumber === selectedPokemon.dexNumber) {
-          setAvatarDexNumber(updated.length > 0 ? updated[0].dexNumber : null);
+          const newAvatar = updated.length > 0 ? updated[0].dexNumber : null;
+          setAvatarDexNumber(newAvatar);
+          if (userId) patchPlayerState(userId, { avatarDexNumber: newAvatar });
         }
       }
       return updated;
     });
     setRubies((r) => r + amount * (selectedPokemon.power || 0));
+    if (userId) patchPlayerState(userId, { rubies: rubies + amount * (selectedPokemon.power || 0) });
     setSelectedPokemon(null);
-  }
-
-  // Set avatar from modal
-  function handleSetAvatar() {
-    if (selectedPokemon) {
-      setAvatarDexNumber(selectedPokemon.dexNumber);
-    }
+    setIsSaving(false);
   }
 
   // Recalculate power whenever collection changes
@@ -168,6 +185,14 @@ export default function App() {
   // Get avatar Pokémon object
   const avatar = collection.find(p => p.dexNumber === avatarDexNumber);
 
+  // Show error messages temporarily (auto-clear after 3 seconds)
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   console.log("Render", { error, loading, userId, discordUsername, collection, avatar });
 
   if (error) {
@@ -176,52 +201,75 @@ export default function App() {
   if (loading || !userId || !discordUsername) {
     return <div style={{ color: '#fff', padding: 40 }}>Loading player data...</div>;
   }
-  if (collection.length === 0) {
-    return <div style={{ color: '#fff', padding: 40 }}>No Pokémon in your collection yet. Try rolling to get started!</div>;
-  }
 
   return (
-    <div style={{
-      background: "#222",
-      minHeight: "100vh",
-      color: "#fff",
-      paddingTop: 40,
-      maxWidth: 1800,
-      margin: "0 auto",
-      display: "flex",
-      flexDirection: "row"
-    }}>
-      {/* Left sidebar for avatar and user info */}
-      <div style={{ width: 520, minWidth: 340, padding: 24, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        {avatar ? (
-          <div style={{ marginBottom: 18, display: "flex", alignItems: "center" }}>
-            <img src={avatar.image} alt={avatar.name} style={{ width: 54, height: 54, borderRadius: 12, border: "3px solid #4caf50", marginRight: 10 }} />
-            <div>
-              <div style={{ fontWeight: "bold", fontSize: 17 }}>{avatar.name}</div>
-              <div style={{ fontSize: 13, color: "#aaa" }}>Avatar</div>
-            </div>
-          </div>
-        ) : (
-          <div style={{ marginBottom: 18, color: "#aaa" }}>No avatar set</div>
-        )}
-        <div style={{ fontWeight: "bold", fontSize: 15, marginBottom: 8 }}>@{discordUsername}</div>
+    <div className="app-root">
+      {/* Top bar for power/rubies */}
+      <div className="topbar">
         <CurrencyBar power={power} rubies={rubies} />
-        <Collection collection={collection} onSelect={setSelectedPokemon} />
-        <Leaderboard playerUserId={userId} collection={collection} />
       </div>
-      {/* Main content area: RollScreen */}
-      <div style={{ flex: 1, padding: 32, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <h2 style={{ textAlign: "left", marginLeft: 8, alignSelf: 'flex-start' }}>Pokémon RNG Activity</h2>
-        <RollScreen onRoll={handleRoll} rolledPokemon={rolledPokemon} onClaim={handleClaim} onDiscard={handleDiscard} />
-        {selectedPokemon && (
-          <PokemonDetailModal
-            pokemon={selectedPokemon}
-            onClose={() => setSelectedPokemon(null)}
-            onSell={handleSell}
-            onSetAvatar={handleSetAvatar}
-            isAvatar={avatarDexNumber === selectedPokemon.dexNumber}
-          />
-        )}
+      <div className="layout-row">
+        {/* Sidebar content (Collection or Shop) */}
+        <div className={`collection-sidebar${collectionOpen ? ' open' : ''}`}>
+          {/* Sidebar toggles attached to right edge of sidebar, always visible */}
+          {collectionOpen && (
+            <>
+              <div className="collection-header">
+                {/* Menu toggles above the title and content */}
+                <div className="sidebar-menu-toggles sidebar-menu-toggles--block">
+                  <button
+                    className={`sidebar-menu-btn${sidebarTab === 'collection' ? ' active' : ''}`}
+                    onClick={() => setSidebarTab('collection')}
+                    aria-label="Show Collection"
+                  >
+                    <span role="img" aria-label="Collection" style={{fontSize: 20}}>📦</span>
+                  </button>
+                  <button
+                    className={`sidebar-menu-btn${sidebarTab === 'shop' ? ' active' : ''}`}
+                    onClick={() => setSidebarTab('shop')}
+                    aria-label="Show Shop"
+                  >
+                    <span role="img" aria-label="Shop" style={{fontSize: 20}}>🛒</span>
+                  </button>
+                </div>
+                <span className="collection-header-title" style={{ fontWeight: 'bold', fontSize: 22, marginRight: 12 }}>
+                  {sidebarTab === 'collection' ? 'Your Collection' : 'Shop'}
+                </span>
+              </div>
+              <div className="collection-content">
+                {sidebarTab === 'collection' ? (
+                  <div className="collection-grid">
+                    <Collection collection={collection} onSelect={setSelectedPokemon} selectedPokemon={selectedPokemon} />
+                  </div>
+                ) : (
+                  <div className="shop-placeholder">
+                    <h2>Shop Coming Soon</h2>
+                    <p>Placeholder for shop UI.</p>
+                  </div>
+                )}
+              </div>
+              {/* Condensed Pokémon info panel at bottom of sidebar */}
+              {sidebarTab === 'collection' && selectedPokemon && (
+                <PokemonInfoPanel
+                  pokemon={selectedPokemon}
+                  onClose={() => setSelectedPokemon(null)}
+                  onSell={handleSell}
+                  onSetAvatar={handleSetAvatar}
+                  isAvatar={avatarDexNumber === selectedPokemon.dexNumber}
+                  isSaving={isSaving}
+                />
+              )}
+            </>
+          )}
+        </div>
+        {/* Main Roll UI Centered */}
+        <div className="center-main">
+          <RollScreen onRoll={handleRoll} rolledPokemon={rolledPokemon} onClaim={handleClaim} onDiscard={handleDiscard} isSaving={isSaving} />
+        </div>
+        {/* Leaderboard Sidebar */}
+        <div className="leaderboard-sidebar">
+          <Leaderboard playerUserId={userId} collection={collection} showAvatars usernamesMap={{ [userId]: discordUsername }} />
+        </div>
       </div>
     </div>
   );

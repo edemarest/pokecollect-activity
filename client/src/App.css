@@ -1,0 +1,19 @@
+/* App.css: placeholder for custom app-wide styles. Add your custom styles here if needed. */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #222;
+  color: #fff;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+/* Hide scrollbars for sidebars if desired */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #222;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}

@@ -1,0 +1,18 @@
+{
+  "discordId": "253273449227616257",
+  "collection": [
+    {
+      "name": "Thievul",
+      "dexNumber": 9,
+      "rarity": "wild",
+      "odds": 200,
+      "power": 0,
+      "image": "/pokemon/thievul.png",
+      "type": "wild",
+      "amount": 1
+    }
+  ],
+  "power": 0,
+  "rubies": 0,
+  "avatar": null
+}

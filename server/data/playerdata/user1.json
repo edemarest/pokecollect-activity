@@ -1,0 +1,26 @@
+{
+  "discordId": "user1",
+  "collection": [
+    {
+      "name": "Charmander",
+      "dexNumber": 2,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "/pokemon/charmander.png",
+      "amount": 2
+    },
+    {
+      "name": "Rattata",
+      "dexNumber": 5,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "/pokemon/rattata.png",
+      "amount": 1
+    }
+  ],
+  "rubies": 100,
+  "avatarDexNumber": null,
+  "avatarImage": "/pokemon/charmander.png"
+}

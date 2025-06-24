@@ -1,5 +1,29 @@
 import React, { useState } from "react";
 
+// Rarity color and gradient map
+export const RARITY_STYLES = {
+  common: {
+    color: '#bdbdbd',
+    gradient: 'linear-gradient(90deg, #e0e0e0 0%, #bdbdbd 50%, #e0e0e0 100%)'
+  },
+  uncommon: {
+    color: '#4caf50',
+    gradient: 'linear-gradient(90deg, #a8ff78 0%, #4caf50 50%, #a8ff78 100%)'
+  },
+  rare: {
+    color: '#2196f3',
+    gradient: 'linear-gradient(90deg, #6dd5fa 0%, #2196f3 50%, #6dd5fa 100%)'
+  },
+  wild: {
+    color: '#ab47bc',
+    gradient: 'linear-gradient(90deg, #f3e7e9 0%, #ab47bc 50%, #f3e7e9 100%)'
+  },
+  legendary: {
+    color: '#ffd700',
+    gradient: 'linear-gradient(90deg, #fffbe6 0%, #ffd700 40%, #fffbe6 100%)'
+  }
+};
+
 const sortOptions = [
   { value: "dex", label: "Dex #" },
   { value: "rarity", label: "Rarity" },
@@ -7,7 +31,7 @@ const sortOptions = [
   { value: "name", label: "Name" }
 ];
 
-export default function Collection({ collection, onSelect }) {
+export default function Collection({ collection, onSelect, selectedPokemon }) {
   const [sortBy, setSortBy] = useState("dex");
   const [filter, setFilter] = useState("");
 
@@ -32,10 +56,10 @@ export default function Collection({ collection, onSelect }) {
 
   return (
     <div style={{
-      width: 480,
-      minWidth: 340,
-      maxWidth: 520,
-      height: 'calc(100vh - 180px)',
+      width: '100%',
+      minWidth: 0,
+      maxWidth: '100%',
+      height: '100%',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
@@ -43,7 +67,6 @@ export default function Collection({ collection, onSelect }) {
       padding: 0,
       margin: 0
     }}>
-      <h3 style={{ textAlign: "left", marginLeft: 4, marginBottom: 8 }}>Your Collection</h3>
       <div style={{
         background: '#181818',
         borderRadius: 12,
@@ -76,26 +99,45 @@ export default function Collection({ collection, onSelect }) {
           flex: 1,
           overflowY: "auto",
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gridTemplateRows: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(3, 1fr)",
           gap: 8,
           justifyItems: "center",
           alignItems: "center"
         }}>
           {filtered.length === 0 ? (
-            <div style={{ color: "#aaa", gridColumn: 'span 4' }}>No Pokémon match your filter.</div>
+            <div style={{ color: "#aaa", gridColumn: 'span 3' }}>No Pokémon match your filter.</div>
           ) : (
-            filtered.slice(0, 16).map((poke, idx) => (
-              <div
-                key={poke.dexNumber}
-                style={{ background: "#333", borderRadius: 8, padding: 6, textAlign: "center", cursor: "pointer", width: 90, height: 90, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-                onClick={() => onSelect(poke)}
-              >
-                <img src={poke.image} alt={poke.name} style={{ width: 44, height: 44, marginBottom: 2 }} />
-                <div style={{ fontWeight: "bold", fontSize: 13 }}>{poke.name}</div>
-                <div style={{ fontSize: 11, color: "#aaa" }}>x{poke.amount || 1}</div>
-              </div>
-            ))
+            filtered.map((poke, idx) => {
+              const rarityStyle = RARITY_STYLES[poke.rarity] || { color: '#fff', gradient: 'none' };
+              return (
+                <div
+                  key={poke.dexNumber}
+                  className={
+                    "collection-card" +
+                    (selectedPokemon && selectedPokemon.dexNumber === poke.dexNumber ? " selected" : "")
+                  }
+                  style={{
+                    background: "#333",
+                    borderRadius: 8,
+                    padding: 6,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    width: 90,
+                    height: 90,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  onClick={() => onSelect(poke)}
+                >
+                  <img src={poke.image} alt={poke.name} style={{ width: 44, height: 44, marginBottom: 2 }} />
+                  <div style={{ fontWeight: "bold", fontSize: 13 }}>{poke.name}</div>
+                  <div style={{ fontSize: 11, color: rarityStyle.color }}>{poke.rarity.charAt(0).toUpperCase() + poke.rarity.slice(1)}</div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>x{poke.amount || 1}</div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

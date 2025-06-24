@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard }) {
+export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard, isSaving }) {
     return (
         <div style={{ margin: "32px 0" }}>
             <div style={{ marginTop: 32 }}>
@@ -10,10 +10,10 @@ export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard }
                         <div><b>{rolledPokemon.name}</b> (#{rolledPokemon.dexNumber})</div>
                         <div>Rarity: {rolledPokemon.rarity}</div>
                         <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                            <button onClick={onClaim} style={{ padding: "8px 24px", borderRadius: 8, background: "#2196f3", color: "#fff", border: "none", cursor: "pointer" }}>
+                            <button onClick={onClaim} disabled={isSaving} style={{ padding: "8px 24px", borderRadius: 8, background: isSaving ? "#888" : "#2196f3", color: "#fff", border: "none", cursor: isSaving ? "not-allowed" : "pointer" }}>
                                 Claim
                             </button>
-                            <button onClick={onDiscard} style={{ padding: "8px 24px", borderRadius: 8, background: "#e53935", color: "#fff", border: "none", cursor: "pointer" }}>
+                            <button onClick={onDiscard} disabled={isSaving} style={{ padding: "8px 24px", borderRadius: 8, background: isSaving ? "#888" : "#e53935", color: "#fff", border: "none", cursor: isSaving ? "not-allowed" : "pointer" }}>
                                 Discard
                             </button>
                         </div>
@@ -42,16 +42,16 @@ export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard }
             </div>
             <button
                 onClick={onRoll}
-                disabled={!!rolledPokemon}
+                disabled={!!rolledPokemon || isSaving}
                 style={{
                     fontSize: 24,
                     padding: "12px 32px",
                     borderRadius: 8,
-                    background: "#4caf50",
+                    background: isSaving ? "#888" : "#4caf50",
                     color: "#fff",
                     border: "none",
-                    cursor: !!rolledPokemon ? "not-allowed" : "pointer",
-                    opacity: !!rolledPokemon ? 0.6 : 1,
+                    cursor: !!rolledPokemon || isSaving ? "not-allowed" : "pointer",
+                    opacity: !!rolledPokemon || isSaving ? 0.6 : 1,
                     marginTop: 32,
                     display: "block",
                     marginLeft: "auto",

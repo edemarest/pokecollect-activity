@@ -1,21 +1,12 @@
 {
   "collection": [
     {
-      "name": "Charmander",
-      "dexNumber": 2,
-      "rarity": "common",
-      "odds": 10,
-      "power": 10,
-      "image": "src/assets/pokemon/charmander.png",
-      "amount": 1
-    },
-    {
       "name": "Pidgey",
       "dexNumber": 4,
       "rarity": "common",
       "odds": 10,
       "power": 10,
-      "image": "src/assets/pokemon/pidgey.png",
+      "image": "pokemon/pidgey.png",
       "amount": 1
     },
     {
@@ -24,10 +15,28 @@
       "rarity": "common",
       "odds": 10,
       "power": 10,
-      "image": "src/assets/pokemon/rattata.png",
+      "image": "pokemon/rattata.png",
+      "amount": 2
+    },
+    {
+      "name": "Bulbasaur",
+      "dexNumber": 1,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "pokemon/bulbasaur.png",
+      "amount": 2
+    },
+    {
+      "name": "Eevee",
+      "dexNumber": 10,
+      "rarity": "uncommon",
+      "odds": 50,
+      "power": 50,
+      "image": "/pokemon/eevee.png",
       "amount": 1
     }
   ],
-  "rubies": 10,
-  "avatarDexNumber": 2
+  "rubies": 40,
+  "avatarDexNumber": 1
 }
