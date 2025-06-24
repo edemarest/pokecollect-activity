@@ -10,7 +10,8 @@ lerna-debug.log*
 node_modules
 
 # Sensitive environment variables
-.env
+server/.env
+client/.env
 
 # Modules + built files
 node_modules
@@ -28,3 +29,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.png

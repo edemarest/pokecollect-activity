@@ -1,13 +1,29 @@
 import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-dotenv.config({ path: "../.env" });
+import playerRouter from "./routes/player.js";
+import leaderboardRouter from "./routes/leaderboard.js";
+import cors from "cors";
+dotenv.config({ path: ".env" });
 
 const app = express();
 const port = 3001;
 
 // Allow express to parse JSON bodies
 app.use(express.json());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    process.env.VITE_TUNNEL_URL,
+    "https://discord.com"
+  ],
+  credentials: true,
+}));
+
+// Player state API
+app.use("/api/player", playerRouter);
+// Leaderboard API
+app.use("/api/leaderboard", leaderboardRouter);
 
 app.post("/api/token", async (req, res) => {
   

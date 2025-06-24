@@ -1,0 +1,33 @@
+{
+  "collection": [
+    {
+      "name": "Charmander",
+      "dexNumber": 2,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "src/assets/pokemon/charmander.png",
+      "amount": 1
+    },
+    {
+      "name": "Pidgey",
+      "dexNumber": 4,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "src/assets/pokemon/pidgey.png",
+      "amount": 1
+    },
+    {
+      "name": "Rattata",
+      "dexNumber": 5,
+      "rarity": "common",
+      "odds": 10,
+      "power": 10,
+      "image": "src/assets/pokemon/rattata.png",
+      "amount": 1
+    }
+  ],
+  "rubies": 10,
+  "avatarDexNumber": 2
+}
