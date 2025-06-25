@@ -209,7 +209,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/doduo.png",
-      "amount": 4
+      "amount": 5
     },
     {
       "name": "Haunter",
@@ -519,6 +519,16 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/oddish.png",
+      "amount": 1
+    },
+    {
+      "name": "Caterpie",
+      "dexNumber": 10,
+      "dexName": "caterpie",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/caterpie.png",
       "amount": 1
     }
   ],
