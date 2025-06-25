@@ -6,8 +6,8 @@ import PokemonInfoPanel from "./components/PokemonInfoPanel";
 import Leaderboard from "./components/Leaderboard";
 import Shop from "./components/Shop";
 import ShopInfoPanel from "./components/ShopInfoPanel";
+import ActiveBoostsBar from "./components/ActiveBoostsBar";
 import { getPlayerState, setPlayerState, patchPlayerState, claimPokemon as claimPokemonApi, discardPokemon as discardPokemonApi, setAvatar as setAvatarApi, sellPokemon as sellPokemonApi } from "./utils/api";
-import { weightedRandomPokemon } from "../utils/gameLogic";
 import './App.css';
 import './AppLayout.css';
 
@@ -31,6 +31,7 @@ export default function App({ discordSdk, auth }) {
   const [rollLog, setRollLog] = useState([]);
   const [pokemonData, setPokemonData] = useState([]);
   const [selectedBoost, setSelectedBoost] = useState(null);
+  const [activeBoosts, setActiveBoosts] = useState([]);
 
   // Get Discord user info via Activity SDK
   useEffect(() => {
@@ -83,12 +84,11 @@ export default function App({ discordSdk, auth }) {
       setError(null);
       try {
         const data = await getPlayerState(userId);
-        console.log("Fetched player state:", data);
         setCollection(Array.isArray(data.collection) ? data.collection : []);
         setRubies(typeof data.rubies === 'number' ? data.rubies : 0);
         setAvatarDexNumber(data.avatarDexNumber || null);
+        setActiveBoosts(data.activeBoosts || []); // <-- Add this line
       } catch (err) {
-        console.error("Failed to load player data:", err);
         setError("Failed to load player data.");
       } finally {
         setLoading(false);
@@ -200,7 +200,7 @@ export default function App({ discordSdk, auth }) {
       const data = await result.json();
       if (data.success) {
         setRubies(data.rubies);
-        // Optionally update active boosts here
+        setActiveBoosts(data.activeBoosts || []); // <-- Add this line
       } else {
         setError("Failed to buy boost: " + (data.message || "Unknown error"));
       }
@@ -316,13 +316,16 @@ export default function App({ discordSdk, auth }) {
                     <Collection collection={collection} onSelect={setSelectedPokemon} selectedPokemon={selectedPokemon} />
                   </div>
                 ) : (
-                  <Shop
-                    userId={userId}
-                    rubies={rubies}
-                    onBuyBoost={handleBuyBoost}
-                    selectedBoost={selectedBoost}
-                    setSelectedBoost={setSelectedBoost}
-                  />
+                  <>
+                    {console.log("[App] Rendering Shop with selectedBoost:", selectedBoost)}
+                    <Shop
+                      userId={userId}
+                      rubies={rubies}
+                      onBuyBoost={handleBuyBoost}
+                      selectedBoost={selectedBoost}
+                      setSelectedBoost={setSelectedBoost}
+                    />
+                  </>
                 )}
               </div>
               {/* Condensed Pokémon info panel at bottom of sidebar */}
@@ -341,6 +344,7 @@ export default function App({ discordSdk, auth }) {
         </div>
         {/* Main Roll UI Centered */}
         <div className="center-main">
+          <ActiveBoostsBar boosts={activeBoosts} />
           <RollScreen
             onRoll={handleRoll}
             rolledPokemon={rolledPokemon}
@@ -348,6 +352,7 @@ export default function App({ discordSdk, auth }) {
             onDiscard={handleDiscard}
             isSaving={isSaving}
             pokemonList={pokemonData}
+            activeBoosts={activeBoosts}
           />
         </div>
         {/* Leaderboard Sidebar */}
@@ -364,13 +369,17 @@ export default function App({ discordSdk, auth }) {
       </div>
       {/* Place ShopInfoPanel here, outside the sidebar */}
       {sidebarTab === "shop" && (
-        <ShopInfoPanel
-          boost={selectedBoost}
-          rubies={rubies}
-          onBuy={handleBuyBoost}
-          isBuying={isSaving}
-          onClose={() => setSelectedBoost(null)}
-        />
+        <>
+          <ShopInfoPanel
+            boost={selectedBoost}
+            rubies={rubies}
+            onBuy={handleBuyBoost}
+            isBuying={isSaving}
+            onClose={() => {
+              setSelectedBoost(null);
+            }}
+          />
+        </>
       )}
     </div>
   );

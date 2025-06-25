@@ -1,0 +1,59 @@
+.active-boosts-bar {
+  min-height: 56px; /* Reserve space even when empty */
+  display: flex;
+  gap: 16px;
+  padding: 10px 18px;
+  background: #23272f;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0004;
+  margin: 18px auto 0 auto;
+  max-width: 600px;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.boost-card {
+  background: #31343c;
+  border-radius: 8px;
+  padding: 10px 18px 8px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+  box-shadow: 0 1px 6px #0002;
+  border: 2px solid #444;
+  position: relative;
+}
+
+.boost-name {
+  font-weight: bold;
+  color: #ffd54f;
+  font-size: 1.05em;
+  margin-bottom: 2px;
+}
+
+.boost-effect {
+  color: #90caf9;
+  font-size: 0.98em;
+  margin-bottom: 4px;
+}
+
+.boost-timer {
+  color: #e57373;
+  font-size: 0.97em;
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+@media (max-width: 600px) {
+  .active-boosts-bar {
+    flex-wrap: wrap;
+    max-width: 98vw;
+    padding: 8px 2vw;
+  }
+  .boost-card {
+    min-width: 70px;
+    padding: 8px 8px 6px 8px;
+  }
+}

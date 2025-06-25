@@ -79,20 +79,17 @@
   justify-content: center;
 }
 
-.shop-infopanel {
+.shop-info-panel {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  margin: 0 auto;
+  margin: 0 0;
   background: #23272f;
   border-radius: 18px 18px 0 0;
-  box-shadow: 0 -6px 32px #0007;
   padding: 32px 24px 24px 24px;
-  min-width: 320px;
-  max-width: 420px;
-  width: 100%;
-  z-index: 2000; /* Make sure this is higher than any sidebar/shop content */
+  width: 400px;
+  z-index: 2000; /* Must be higher than any sidebar/shop content */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -151,19 +148,6 @@
   display: flex;
   align-items: flex-start;
   gap: 32px;
-}
-
-.shop-info-panel {
-  background: #23272f;
-  border-radius: 14px;
-  box-shadow: 0 6px 32px #0007;
-  padding: 28px 24px 20px 24px;
-  min-width: 320px;
-  max-width: 350px;
-  margin-left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .shop-info-panel-empty {

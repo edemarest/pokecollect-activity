@@ -3,12 +3,12 @@ import { createRoot } from "react-dom/client";
 import App from "./src/App";
 import "./style.css";
 import { DiscordSDK } from "@discord/embedded-app-sdk";
-console.log("main.jsx loaded");
-console.log("window.location.search:", window.location.search);
-console.log("Discord Client ID (top):", import.meta.env.VITE_DISCORD_CLIENT_ID);
-console.log("All env:", import.meta.env);
-console.log("DiscordNative:", window.DiscordNative);
-console.log("DiscordActivity:", window.DiscordActivity);
+// console.log("main.jsx loaded");
+// console.log("window.location.search:", window.location.search);
+// console.log("Discord Client ID (top):", import.meta.env.VITE_DISCORD_CLIENT_ID);
+// console.log("All env:", import.meta.env);
+// console.log("DiscordNative:", window.DiscordNative);
+// console.log("DiscordActivity:", window.DiscordActivity);
 
 // Only initialize DiscordSDK if running inside Discord (frame_id present)
 if (window.location.search.includes("frame_id")) {

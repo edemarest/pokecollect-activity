@@ -4,6 +4,7 @@ import { broadcastRollLog } from "../ws.js";
 import fs from "fs/promises";
 import path from "path";
 import { rollLog, MAX_LOG } from "../logStore.js";
+import { getUserData, removeExpiredBoosts } from "../utils/userData.js"; // Add this import
 
 // Weighted random selection
 function weightedRandomPokemon(list) {
@@ -27,6 +28,16 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing userId" });
     }
 
+    // Load user data and remove expired boosts
+    const user = removeExpiredBoosts(userId);
+    const now = Date.now();
+    const luckBoosts = (user.activeBoosts || []).filter(
+      b => b.type === "luck" && b.expiresAt > now
+    );
+    const luckMultiplier = luckBoosts.length > 0
+      ? Math.max(...luckBoosts.map(b => b.multiplier))
+      : 1;
+
     // Try to load the Pokémon data using fs.readFile
     const pokemonPath = path.resolve("data/pokemon.json");
     let pokemonData;
@@ -39,15 +50,71 @@ router.post("/", async (req, res) => {
       return res.status(500).json({ error: "Failed to load Pokémon data" });
     }
 
-    // Roll a Pokémon
-    let pokemon;
-    try {
-      pokemon = weightedRandomPokemon(pokemonData);
-      console.log("[/api/roll] Rolled Pokémon:", pokemon);
-    } catch (rollErr) {
-      console.error("[/api/roll] Error during rolling:", rollErr);
-      return res.status(500).json({ error: "Failed to roll Pokémon" });
+    // Group pokemons by rarity
+    const byRarity = {
+      common: [],
+      uncommon: [],
+      rare: [],
+      legendary: [],
+      mythical: [],
+      wild: []
+    };
+    for (const p of pokemonData) {
+      if (byRarity[p.rarity]) byRarity[p.rarity].push(p);
     }
+
+    // Base weights (adjust as needed for your game)
+    let weights = {
+      common: 80,
+      uncommon: 15,
+      rare: 4,
+      legendary: 1,
+      mythical: 0.2,
+      wild: 0.5
+    };
+
+    // Save original weights for comparison
+    const originalWeights = { ...weights };
+
+    // Apply luck multiplier to all but common
+    for (const rarity of ["uncommon", "rare", "legendary", "mythical", "wild"]) {
+      weights[rarity] *= luckMultiplier;
+    }
+
+    // Calculate totalWeight ONCE
+    const totalWeight = Object.entries(weights)
+      .reduce((sum, [rarity, w]) => sum + (byRarity[rarity]?.length ? w : 0), 0);
+
+    const originalTotalWeight = Object.entries(originalWeights)
+      .reduce((sum, [rarity, w]) => sum + (byRarity[rarity]?.length ? w : 0), 0);
+
+    // Log current luck boost and boosted rates
+    console.log(`[ROLL] Luck boost multiplier: x${luckMultiplier}`);
+    console.log("[ROLL] Rarity rates (normal vs boosted):");
+    for (const rarity of Object.keys(weights)) {
+      if (!byRarity[rarity]?.length) continue;
+      const normalPct = ((originalWeights[rarity] / originalTotalWeight) * 100).toFixed(2);
+      const boostedPct = ((weights[rarity] / totalWeight) * 100).toFixed(2);
+      console.log(
+        `  ${rarity}: ${normalPct}% → ${boostedPct}%`
+      );
+    }
+
+    // Normalize and pick a rarity
+    let rand = Math.random() * totalWeight;
+    let chosenRarity = "common";
+    for (const [rarity, w] of Object.entries(weights)) {
+      if (!byRarity[rarity]?.length) continue;
+      if (rand < w) {
+        chosenRarity = rarity;
+        break;
+      }
+      rand -= w;
+    }
+
+    // Pick a random Pokémon from that rarity
+    const pool = byRarity[chosenRarity];
+    const pokemon = pool[Math.floor(Math.random() * pool.length)];
 
     // If rare or higher, add to log and broadcast
     const rareLevels = ["common", "rare", "wild", "legendary", "mythical"];

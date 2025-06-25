@@ -92,16 +92,15 @@ router.post("/:userId/buy-boost", (req, res) => {
   }
 
   // Get user data
-  const user = getUserData(userId);
+  let user = getUserData(userId); // Use let, not const!
   const totalPrice = boostDef.price * quantity;
   if (user.rubies < totalPrice) {
     return res.status(400).json({ error: "Not enough rubies" });
   }
 
-  // Deduct rubies and add/extend boost
   user.rubies -= totalPrice;
   for (let i = 0; i < quantity; i++) {
-    addOrExtendBoost(userId, boostDef);
+    user = addOrExtendBoost(userId, boostDef);
   }
   saveUserData(userId, user);
 

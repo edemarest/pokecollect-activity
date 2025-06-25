@@ -8,12 +8,12 @@ const clients = new Set();
 
 wss.on('connection', function connection(ws) {
   clients.add(ws);
-  console.log(`[ws] Client connected. Total clients: ${clients.size}`);
+  // console.log(`[ws] Client connected. Total clients: ${clients.size}`);
   broadcastSystemLog("A user connected.");
 
   ws.on('close', function() {
     clients.delete(ws);
-    console.log(`[ws] Client disconnected. Total clients: ${clients.size}`);
+    // console.log(`[ws] Client disconnected. Total clients: ${clients.size}`);
     broadcastSystemLog("A user disconnected.");
   });
 

@@ -244,6 +244,7 @@ html, body, #root, #app {
   top: var(--topbar-height);
   bottom: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-width: 0;
@@ -251,7 +252,12 @@ html, body, #root, #app {
   overflow: hidden;
   z-index: 1;
   padding: 0 24px;
-  pointer-events: none; /* so sidebars can overlay */
+  pointer-events: none; /* keep this for the container */
+}
+
+.active-boosts-bar,
+.roll-screen {
+  pointer-events: auto; /* allow interaction for these elements */
 }
 
 /* Leaderboard entry text handling */

@@ -199,3 +199,14 @@ export function removeExpiredBoosts(discordId) {
   }
   return data;
 }
+
+// New function to handle boost purchase
+export function purchaseBoost(userId, boostDef, quantity, totalPrice) {
+  let user = getUserData(userId);
+  user.rubies -= totalPrice;
+  for (let i = 0; i < quantity; i++) {
+    addOrExtendBoost(userId, boostDef); // <-- no 'let' here!
+  }
+  saveUserData(userId, user);
+  return { success: true, rubies: user.rubies, activeBoosts: user.activeBoosts };
+}
