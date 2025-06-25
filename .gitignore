@@ -27,3 +27,6 @@ dist-ssr
 *.sln
 *.sw?
 *.png
+
+client/.env
+server/.env

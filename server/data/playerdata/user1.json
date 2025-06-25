@@ -2,25 +2,58 @@
   "discordId": "user1",
   "collection": [
     {
-      "name": "Charmander",
-      "dexNumber": 2,
+      "name": "Jigglypuff",
+      "dexNumber": 39,
+      "dexName": "jigglypuff",
       "rarity": "common",
-      "odds": 10,
+      "odds": 100,
       "power": 10,
-      "image": "/pokemon/charmander.png",
-      "amount": 2
+      "image": "/pokemon/jigglypuff.png",
+      "amount": 1
     },
     {
-      "name": "Rattata",
-      "dexNumber": 5,
+      "name": "Squirtle",
+      "dexNumber": 7,
+      "dexName": "squirtle",
       "rarity": "common",
-      "odds": 10,
+      "odds": 100,
       "power": 10,
-      "image": "/pokemon/rattata.png",
+      "image": "/pokemon/squirtle.png",
+      "amount": 1
+    },
+    {
+      "name": "Kakuna",
+      "dexNumber": 14,
+      "dexName": "kakuna",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/kakuna.png",
+      "amount": 1
+    },
+    {
+      "name": "Exeggcute",
+      "dexNumber": 102,
+      "dexName": "exeggcute",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/exeggcute.png",
+      "amount": 1
+    },
+    {
+      "name": "Lapras",
+      "dexNumber": 131,
+      "dexName": "lapras",
+      "rarity": "rare",
+      "odds": 5,
+      "power": 100,
+      "image": "/pokemon/lapras.png",
       "amount": 1
     }
   ],
-  "rubies": 100,
-  "avatarDexNumber": null,
-  "avatarImage": "/pokemon/charmander.png"
+  "power": 0,
+  "rubies": 0,
+  "avatar": null,
+  "activeBoosts": []
 }

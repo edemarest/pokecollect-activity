@@ -1,0 +1,159 @@
+/* RollScreen main container */
+.rollscreen-root {
+  margin: 32px 0;
+}
+
+.rollscreen-content {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rollscreen-anim-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 200px;
+  justify-content: center;
+}
+
+.rollscreen-pokemon-img {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: #222;
+  box-shadow: 0 2px 12px #0008;
+  transition:
+    transform 0.5s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.5s,
+    border 0.5s,
+    background 0.5s;
+  z-index: 2;
+}
+
+.rollscreen-pokemon-img.expanded {
+  width: 200px;
+  height: 200px;
+  transform: scale(1.2) rotate(-8deg);
+  box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
+  border: 3px solid #ffd700;
+  background: #fffbe6;
+  z-index: 3;
+  transition:
+    transform 0.2s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.5s,
+    border 0.5s,
+    background 0.5s;
+}
+
+.rollscreen-pokemon-img.settling {
+  width: 200px;
+  height: 200px;
+  transform: scale(1.15) rotate(-4deg);
+  box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
+  border: 3px solid #ffd700;
+  background: #fffbe6;
+  z-index: 3;
+  transition:
+    transform 0.7s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.5s,
+    border 0.5s,
+    background 0.5s;
+}
+
+.rollscreen-pokemon-img.settled {
+  width: 180px;
+  height: 180px;
+  transform: scale(1.05) rotate(0deg);
+  box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
+  border: 3px solid #ffd700;
+  background: #fffbe6;
+  z-index: 3;
+  transition:
+    transform 0.7s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.5s,
+    border 0.5s,
+    background 0.5s;
+}
+
+.rollscreen-pokemon-name {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 8px #000a;
+}
+
+.rollscreen-pokemon-rarity {
+  margin-bottom: 4px;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px #000a;
+}
+
+.rollscreen-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.rollscreen-btn {
+  padding: 8px 24px;
+  border-radius: 8px;
+  color: #fff;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.rollscreen-btn.claim {
+  background: #2196f3;
+}
+
+.rollscreen-btn.discard {
+  background: #e53935;
+}
+
+.rollscreen-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+
+.rollscreen-placeholder {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 8px;
+  font-size: 48px;
+  color: #bbb;
+  border: 2px dashed #ccc;
+}
+
+.rollscreen-roll-btn {
+  font-size: 24px;
+  padding: 12px 32px;
+  border-radius: 8px;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  opacity: 1;
+  margin-top: 32px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background 0.18s, opacity 0.18s;
+}
+
+.rollscreen-roll-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
+}

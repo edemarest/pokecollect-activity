@@ -1,65 +1,137 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import "../styles/roll.css";
 
-export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard, isSaving }) {
+export default function RollScreen({ onRoll, rolledPokemon, onClaim, onDiscard, isSaving, pokemonList }) {
+    const [rarityStyles, setRarityStyles] = useState({});
+    useEffect(() => {
+      fetch("/data/rarityStyles.json")
+        .then(res => res.json())
+        .then(setRarityStyles)
+        .catch(() => setRarityStyles({}));
+    }, []);
+
+    const [isRolling, setIsRolling] = useState(false);
+    const [flashPokemon, setFlashPokemon] = useState(null);
+    const [expanded, setExpanded] = useState(false);
+    const [settling, setSettling] = useState(false);
+    const [settled, setSettled] = useState(false);
+
+    function getRandomPokemon() {
+        return pokemonList[Math.floor(Math.random() * pokemonList.length)];
+    }
+
+    async function handleRollAnimation() {
+        setIsRolling(true);
+        setExpanded(false);
+        setSettling(false);
+        setSettled(false);
+        let flashes = 32;
+        let delay = 40;
+        let current = null;
+
+        for (let i = 0; i < flashes; i++) {
+            current = getRandomPokemon();
+            setFlashPokemon(current);
+            await new Promise(res => setTimeout(res, delay));
+            delay = Math.min(delay * 1.13, 300);
+        }
+        setFlashPokemon(null);
+        setIsRolling(false);
+        setExpanded(true);
+        onRoll();
+        // After expansion, go to settling, then settled
+        setTimeout(() => {
+            setSettling(true);
+            setExpanded(false);
+            setTimeout(() => {
+                setSettling(false);
+                setSettled(true);
+            }, 700); // match .settling transition duration
+        }, 250); // short pop before settling
+    }
+
+    function handleRollClick() {
+        if (isRolling || isSaving) return;
+        handleRollAnimation();
+    }
+
+    // Listen for Enter key to claim
+    useEffect(() => {
+        if (rolledPokemon && settled && !isSaving) {
+            const handleKeyDown = (e) => {
+                if (e.key === "Enter") {
+                    onClaim();
+                }
+            };
+            window.addEventListener("keydown", handleKeyDown);
+            return () => window.removeEventListener("keydown", handleKeyDown);
+        }
+    }, [rolledPokemon, settled, isSaving, onClaim]);
+
+    let displayPokemon = flashPokemon || rolledPokemon;
+    let imgClass = "rollscreen-pokemon-img";
+    if (rolledPokemon && !flashPokemon) {
+        if (expanded) imgClass += " expanded";
+        else if (settling) imgClass += " settling";
+        else if (settled) imgClass += " settled";
+    }
+
     return (
-        <div style={{ margin: "32px 0" }}>
-            <div style={{ marginTop: 32 }}>
-                {rolledPokemon ? (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <img src={rolledPokemon.image} alt={rolledPokemon.name} style={{ width: 80, height: 80, marginBottom: 8 }} />
-                        <div><b>{rolledPokemon.name}</b> (#{rolledPokemon.dexNumber})</div>
-                        <div>Rarity: {rolledPokemon.rarity}</div>
-                        <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                            <button onClick={onClaim} disabled={isSaving} style={{ padding: "8px 24px", borderRadius: 8, background: isSaving ? "#888" : "#2196f3", color: "#fff", border: "none", cursor: isSaving ? "not-allowed" : "pointer" }}>
-                                Claim
-                            </button>
-                            <button onClick={onDiscard} disabled={isSaving} style={{ padding: "8px 24px", borderRadius: 8, background: isSaving ? "#888" : "#e53935", color: "#fff", border: "none", cursor: isSaving ? "not-allowed" : "pointer" }}>
-                                Discard
-                            </button>
+        <div className="rollscreen-root">
+            <div className="rollscreen-content">
+                {displayPokemon ? (
+                    <div className="rollscreen-anim-container">
+                        <img
+                            src={displayPokemon.image}
+                            alt={displayPokemon.name}
+                            className={imgClass}
+                        />
+                        <div className="rollscreen-pokemon-name">
+                            <b>{displayPokemon.name}</b> (#{displayPokemon.dexNumber})
                         </div>
-                    </div>
-                ) : (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <div
+                            className="rollscreen-pokemon-rarity"
                             style={{
-                                width: 80,
-                                height: 80,
-                                marginBottom: 8,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                background: "#f0f0f0",
-                                borderRadius: 8,
-                                fontSize: 48,
-                                color: "#bbb",
-                                border: "2px dashed #ccc"
+                                color: rarityStyles[displayPokemon.rarity]?.color || "#fff"
                             }}
                         >
-                            ?
+                            Rarity: {displayPokemon.rarity}
                         </div>
+                        {rolledPokemon && !flashPokemon && settled && (
+                            <div className="rollscreen-actions">
+                                <button
+                                    onClick={onClaim}
+                                    disabled={isSaving}
+                                    className="rollscreen-btn claim"
+                                >
+                                    Claim
+                                </button>
+                                <button
+                                    onClick={onDiscard}
+                                    disabled={isSaving}
+                                    className="rollscreen-btn discard"
+                                >
+                                    Discard
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="rollscreen-anim-container">
+                        <div className="rollscreen-placeholder">?</div>
                     </div>
                 )}
             </div>
-            <button
-                onClick={onRoll}
-                disabled={!!rolledPokemon || isSaving}
-                style={{
-                    fontSize: 24,
-                    padding: "12px 32px",
-                    borderRadius: 8,
-                    background: isSaving ? "#888" : "#4caf50",
-                    color: "#fff",
-                    border: "none",
-                    cursor: !!rolledPokemon || isSaving ? "not-allowed" : "pointer",
-                    opacity: !!rolledPokemon || isSaving ? 0.6 : 1,
-                    marginTop: 32,
-                    display: "block",
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                }}
-            >
-                Roll
-            </button>
+            {/* Only show Roll button if there is no rolledPokemon */}
+            {!rolledPokemon && (
+                <button
+                    onClick={handleRollClick}
+                    disabled={isRolling || isSaving}
+                    className="rollscreen-roll-btn"
+                >
+                    {isRolling ? "Rolling..." : "Roll"}
+                </button>
+            )}
         </div>
     );
 }

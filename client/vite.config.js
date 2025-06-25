@@ -24,12 +24,7 @@ export default defineConfig(({ mode }) => {
         ...(tunnelHost ? [tunnelHost] : [])
       ],
       proxy: {
-        '/api': {
-          target: 'http://localhost:3002',
-          changeOrigin: true,
-          secure: false,
-          ws: true,
-        },
+        '/api': 'http://localhost:3002'
       },
       hmr: {
         clientPort: 5173,

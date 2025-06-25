@@ -1,12 +1,20 @@
-import React, { useState } from "react";
-import { RARITY_STYLES } from "./Collection";
+import React, { useState, useEffect } from "react";
 
 export default function PokemonInfoPanel({ pokemon, onSell, onSetAvatar, isAvatar, isSaving }) {
   const [sellAmount, setSellAmount] = useState(1);
+  const [rarityStyles, setRarityStyles] = useState({});
+
+  useEffect(() => {
+    fetch("/data/rarityStyles.json")
+      .then(res => res.json())
+      .then(setRarityStyles)
+      .catch(() => setRarityStyles({}));
+  }, []);
+
   if (!pokemon) return null;
 
   const maxAmount = pokemon.amount || 1;
-  const rarityStyle = RARITY_STYLES[pokemon.rarity] || { color: '#fff', gradient: 'none' };
+  const rarityStyle = rarityStyles[pokemon.rarity] || { color: '#fff', gradient: 'none' };
 
   function handleSell() {
     if (sellAmount > 0 && sellAmount <= maxAmount) {
@@ -18,7 +26,11 @@ export default function PokemonInfoPanel({ pokemon, onSell, onSetAvatar, isAvata
     <div className="pokemon-info-panel">
       <div className="pokemon-info-panel-content">
         <div className="pokemon-info-main">
-          <img src={pokemon.image} alt={pokemon.name} className="pokemon-info-img" />
+          <img
+            src={pokemon.image.startsWith('/') ? pokemon.image : '/' + pokemon.image}
+            alt={pokemon.name}
+            className="pokemon-info-img"
+          />
           <div className="pokemon-info-details">
             <div className="pokemon-info-title selected-indicator">
               {pokemon.name} <span className="pokemon-info-dex">#{pokemon.dexNumber}</span>

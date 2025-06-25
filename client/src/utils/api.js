@@ -30,3 +30,27 @@ export async function getLeaderboard() {
   const res = await axios.get(LEADERBOARD_API);
   return res.data;
 }
+
+export async function claimPokemon(userId, pokemon) {
+  const res = await axios.post(`${API_BASE}/${userId}/claim`, { pokemon });
+  console.log("[API] claimPokemon success:", res.data);
+  return res.data;
+}
+
+export async function discardPokemon(userId, dexNumber, amount = 1) {
+  const res = await axios.post(`${API_BASE}/${userId}/discard`, { dexNumber, amount });
+  console.log("[API] discardPokemon success:", res.data);
+  return res.data;
+}
+
+export async function setAvatar(userId, dexNumber, avatarImage) {
+  const res = await axios.post(`${API_BASE}/${userId}/avatar`, { dexNumber, avatarImage });
+  console.log("[API] setAvatar success:", res.data);
+  return res.data;
+}
+
+export async function sellPokemon(userId, dexNumber, amount = 1) {
+  const res = await axios.post(`${API_BASE}/${userId}/sell`, { dexNumber, amount });
+  console.log("[API] sellPokemon success:", res.data);
+  return res.data;
+}

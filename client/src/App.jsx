@@ -4,8 +4,10 @@ import RollScreen from "./components/RollScreen";
 import Collection from "./components/Collection";
 import PokemonInfoPanel from "./components/PokemonInfoPanel";
 import Leaderboard from "./components/Leaderboard";
-import { getPlayerState, setPlayerState, patchPlayerState } from "./utils/api";
-import pokemonData from "../data/pokemon.json";
+import Shop from "./components/Shop";
+import ShopInfoPanel from "./components/ShopInfoPanel";
+import { getPlayerState, setPlayerState, patchPlayerState, claimPokemon as claimPokemonApi, discardPokemon as discardPokemonApi, setAvatar as setAvatarApi, sellPokemon as sellPokemonApi } from "./utils/api";
+import { weightedRandomPokemon } from "../utils/gameLogic";
 import './App.css';
 import './AppLayout.css';
 
@@ -25,6 +27,10 @@ export default function App({ discordSdk, auth }) {
   // Add sidebar state for toggles
   const [sidebarTab, setSidebarTab] = useState('collection'); // 'collection' or 'shop'
   const [collectionOpen, setCollectionOpen] = useState(true); // open by default
+  const [leaderboardRefreshKey, setLeaderboardRefreshKey] = useState(0);
+  const [rollLog, setRollLog] = useState([]);
+  const [pokemonData, setPokemonData] = useState([]);
+  const [selectedBoost, setSelectedBoost] = useState(null);
 
   // Get Discord user info via Activity SDK
   useEffect(() => {
@@ -91,59 +97,74 @@ export default function App({ discordSdk, auth }) {
     fetchState();
   }, [userId]);
 
+  // Fetch Pokémon data
+  useEffect(() => {
+    fetch("/data/pokemon.json")
+      .then(res => res.json())
+      .then(setPokemonData);
+  }, []);
+
   // Simulate a roll (randomly pick from data)
-  function handleRoll() {
-    const idx = Math.floor(Math.random() * pokemonData.length);
-    setRolledPokemon(pokemonData[idx]);
+  async function handleRoll() {
+    if (rolledPokemon || isSaving) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/roll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json();
+      setRolledPokemon(data.pokemon);
+    } catch (e) {
+      // handle error
+    }
+    setIsSaving(false);
   }
 
   // Claim the rolled Pokémon
   async function handleClaim() {
     if (!rolledPokemon || isSaving) return;
     setIsSaving(true);
-    let updatedCollection;
-    setCollection((prev) => {
-      const idx = prev.findIndex((p) => p.dexNumber === rolledPokemon.dexNumber);
-      let updated;
-      if (idx !== -1) {
-        updated = [...prev];
-        updated[idx] = { ...updated[idx], amount: (updated[idx].amount || 1) + 1 };
-      } else {
-        updated = [...prev, { ...rolledPokemon, amount: 1 }];
+    try {
+      if (userId) {
+        const result = await claimPokemonApi(userId, rolledPokemon);
+        setCollection(result.collection);
+        // Add:
+        setLeaderboardRefreshKey(k => k + 1);
       }
-      if (!avatarDexNumber) {
-        setAvatarDexNumber(rolledPokemon.dexNumber);
-      }
-      updatedCollection = updated;
-      return updated;
-    });
-    setRolledPokemon(null);
-    if (userId) {
-      try {
-        await patchPlayerState(userId, { collection: updatedCollection });
-      } catch (e) {
-        setError("Failed to update collection on server.");
-      }
+      setRolledPokemon(null);
+    } catch (e) {
+      setError("Failed to claim Pokémon on server.");
     }
     setIsSaving(false);
   }
 
   // Discard the rolled Pokémon
   async function handleDiscard() {
-    setRolledPokemon(null);
-    // No backend update needed for discard, as nothing changes
+    if (!rolledPokemon || isSaving) return;
+    setIsSaving(true);
+    try {
+      if (userId) {
+        const result = await discardPokemonApi(userId, rolledPokemon.dexNumber, 1);
+        setCollection(result.collection);
+        console.log("[App] Discarded Pokémon successfully:", rolledPokemon.name);
+      }
+      setRolledPokemon(null);
+    } catch (e) {
+      setError("Failed to discard Pokémon on server.");
+    }
+    setIsSaving(false);
   }
 
   // Set avatar from modal
   async function handleSetAvatar() {
     if (!selectedPokemon || !userId || isSaving) return;
     setIsSaving(true);
-    setAvatarDexNumber(selectedPokemon.dexNumber);
     try {
-      await patchPlayerState(userId, {
-        avatarDexNumber: selectedPokemon.dexNumber,
-        avatarImage: selectedPokemon.image // Save image path as well
-      });
+      const result = await setAvatarApi(userId, selectedPokemon.dexNumber, selectedPokemon.image);
+      setAvatarDexNumber(result.avatarDexNumber);
+      console.log("[App] Set avatar successfully:", selectedPokemon.name);
     } catch (e) {
       setError("Failed to update avatar on server.");
     }
@@ -152,28 +173,40 @@ export default function App({ discordSdk, auth }) {
 
   // Sell Pokémon from modal
   async function handleSell(amount) {
-    if (isSaving) return;
+    if (isSaving || !selectedPokemon || !userId) return;
     setIsSaving(true);
-    setCollection((prev) => {
-      const idx = prev.findIndex((p) => p.dexNumber === selectedPokemon.dexNumber);
-      if (idx === -1) return prev;
-      const updated = [...prev];
-      const newAmount = (updated[idx].amount || 1) - amount;
-      if (newAmount > 0) {
-        updated[idx] = { ...updated[idx], amount: newAmount };
+    try {
+      const result = await sellPokemonApi(userId, selectedPokemon.dexNumber, amount);
+      setCollection(result.collection);
+      setRubies(result.rubies);
+      console.log("[App] Sold Pokémon successfully:", selectedPokemon.name, "amount:", amount);
+      setSelectedPokemon(null);
+    } catch (e) {
+      setError("Failed to sell Pokémon on server.");
+    }
+    setIsSaving(false);
+  }
+
+  // Handle buying a boost
+  async function handleBuyBoost(boost, quantity) {
+    if (isSaving || !userId) return;
+    setIsSaving(true);
+    try {
+      const result = await fetch("/api/player/" + userId + "/buy-boost", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ boostId: boost.id, quantity }),
+      });
+      const data = await result.json();
+      if (data.success) {
+        setRubies(data.rubies);
+        // Optionally update active boosts here
       } else {
-        updated.splice(idx, 1);
-        if (avatarDexNumber === selectedPokemon.dexNumber) {
-          const newAvatar = updated.length > 0 ? updated[0].dexNumber : null;
-          setAvatarDexNumber(newAvatar);
-          if (userId) patchPlayerState(userId, { avatarDexNumber: newAvatar });
-        }
+        setError("Failed to buy boost: " + (data.message || "Unknown error"));
       }
-      return updated;
-    });
-    setRubies((r) => r + amount * (selectedPokemon.power || 0));
-    if (userId) patchPlayerState(userId, { rubies: rubies + amount * (selectedPokemon.power || 0) });
-    setSelectedPokemon(null);
+    } catch (e) {
+      setError("Error buying boost: " + e.message);
+    }
     setIsSaving(false);
   }
 
@@ -193,7 +226,48 @@ export default function App({ discordSdk, auth }) {
     }
   }, [error]);
 
-  console.log("Render", { error, loading, userId, discordUsername, collection, avatar });
+  // WebSocket effect for real-time roll log
+  useEffect(() => {
+    // Connect to WebSocket server
+    let wsUrl;
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      wsUrl = "ws://localhost:8080";
+    } else {
+      wsUrl = "wss://" + window.location.host;
+    }
+    const ws = new window.WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      // Optionally, fetch initial log from REST API
+      fetch("/api/roll/log")
+        .then(res => res.json())
+        .then(data => setRollLog(data.log || []));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "roll-log" && msg.data) {
+          setRollLog(prev =>
+            [...prev.slice(-19), msg.data] // keep last 20
+          );
+        }
+      } catch (e) {
+        // Ignore malformed messages
+      }
+    };
+
+    ws.onerror = (e) => {
+      // Optionally handle errors
+      console.error("WebSocket error:", e);
+    };
+
+    return () => ws.close();
+  }, []);
+
+  useEffect(() => {
+    setRollLog([{ username: "TestUser", name: "Mew", rarity: "legendary", timestamp: Date.now() }]);
+  }, []);
 
   if (error) {
     return <div style={{ color: 'red', padding: 40 }}>{error}</div>;
@@ -242,10 +316,13 @@ export default function App({ discordSdk, auth }) {
                     <Collection collection={collection} onSelect={setSelectedPokemon} selectedPokemon={selectedPokemon} />
                   </div>
                 ) : (
-                  <div className="shop-placeholder">
-                    <h2>Shop Coming Soon</h2>
-                    <p>Placeholder for shop UI.</p>
-                  </div>
+                  <Shop
+                    userId={userId}
+                    rubies={rubies}
+                    onBuyBoost={handleBuyBoost}
+                    selectedBoost={selectedBoost}
+                    setSelectedBoost={setSelectedBoost}
+                  />
                 )}
               </div>
               {/* Condensed Pokémon info panel at bottom of sidebar */}
@@ -264,13 +341,37 @@ export default function App({ discordSdk, auth }) {
         </div>
         {/* Main Roll UI Centered */}
         <div className="center-main">
-          <RollScreen onRoll={handleRoll} rolledPokemon={rolledPokemon} onClaim={handleClaim} onDiscard={handleDiscard} isSaving={isSaving} />
+          <RollScreen
+            onRoll={handleRoll}
+            rolledPokemon={rolledPokemon}
+            onClaim={handleClaim}
+            onDiscard={handleDiscard}
+            isSaving={isSaving}
+            pokemonList={pokemonData}
+          />
         </div>
         {/* Leaderboard Sidebar */}
         <div className="leaderboard-sidebar">
-          <Leaderboard playerUserId={userId} collection={collection} showAvatars usernamesMap={{ [userId]: discordUsername }} />
+          <Leaderboard
+            playerUserId={userId}
+            collection={collection}
+            showAvatars
+            usernamesMap={{ [userId]: discordUsername }}
+            refreshKey={leaderboardRefreshKey}
+            rollLog={rollLog}
+          />
         </div>
       </div>
+      {/* Place ShopInfoPanel here, outside the sidebar */}
+      {sidebarTab === "shop" && (
+        <ShopInfoPanel
+          boost={selectedBoost}
+          rubies={rubies}
+          onBuy={handleBuyBoost}
+          isBuying={isSaving}
+          onClose={() => setSelectedBoost(null)}
+        />
+      )}
     </div>
   );
 }

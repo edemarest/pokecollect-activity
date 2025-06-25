@@ -1,0 +1,29 @@
+.currency-bar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 12px 0;
+}
+
+.currency-bar-item {
+  background: #333;
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.currency-bar-icon {
+  margin-right: 4px;
+  font-size: 1.1em;
+}
+
+.currency-bar-item.power {
+  color: #ffe066;
+}
+
+.currency-bar-item.rubies {
+  color: #ff80ab;
+}

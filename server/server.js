@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import playerRouter from "./routes/player.js";
 import leaderboardRouter from "./routes/leaderboard.js";
+import rollRouter from "./routes/roll.js";
 
 // Load env vars
 dotenv.config({ path: "./.env" });
@@ -25,6 +26,7 @@ app.use(cors({
 // API routes
 app.use("/api/player", playerRouter);
 app.use("/api/leaderboard", leaderboardRouter);
+app.use("/api/roll", rollRouter);
 
 // Add /api/token route (copied from server.js)
 import fetch from "node-fetch";

@@ -1,0 +1,26 @@
+{
+  "common": {
+    "color": "#bdbdbd",
+    "gradient": "linear-gradient(90deg, #e0e0e0 0%, #bdbdbd 50%, #e0e0e0 100%)"
+  },
+  "uncommon": {
+    "color": "#4caf50",
+    "gradient": "linear-gradient(90deg, #a8ff78 0%, #4caf50 50%, #a8ff78 100%)"
+  },
+  "rare": {
+    "color": "#2196f3",
+    "gradient": "linear-gradient(90deg, #6dd5fa 0%, #2196f3 50%, #6dd5fa 100%)"
+  },
+  "wild": {
+    "color": "#ab47bc",
+    "gradient": "linear-gradient(90deg, #f3e7e9 0%, #ab47bc 50%, #f3e7e9 100%)"
+  },
+  "legendary": {
+    "color": "#ffd700",
+    "gradient": "linear-gradient(90deg, #fffbe6 0%, #ffd700 40%, #fffbe6 100%)"
+  },
+  "mythical": {
+    "color": "#ff69b4",
+    "gradient": "linear-gradient(90deg, #fff0f5 0%, #ff69b4 40%, #fff0f5 100%)"
+  }
+}

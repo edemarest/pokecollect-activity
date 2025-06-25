@@ -1,28 +1,5 @@
-import React, { useState } from "react";
-
-// Rarity color and gradient map
-export const RARITY_STYLES = {
-  common: {
-    color: '#bdbdbd',
-    gradient: 'linear-gradient(90deg, #e0e0e0 0%, #bdbdbd 50%, #e0e0e0 100%)'
-  },
-  uncommon: {
-    color: '#4caf50',
-    gradient: 'linear-gradient(90deg, #a8ff78 0%, #4caf50 50%, #a8ff78 100%)'
-  },
-  rare: {
-    color: '#2196f3',
-    gradient: 'linear-gradient(90deg, #6dd5fa 0%, #2196f3 50%, #6dd5fa 100%)'
-  },
-  wild: {
-    color: '#ab47bc',
-    gradient: 'linear-gradient(90deg, #f3e7e9 0%, #ab47bc 50%, #f3e7e9 100%)'
-  },
-  legendary: {
-    color: '#ffd700',
-    gradient: 'linear-gradient(90deg, #fffbe6 0%, #ffd700 40%, #fffbe6 100%)'
-  }
-};
+import React, { useState, useEffect } from "react";
+import "../styles/collection.css";
 
 const sortOptions = [
   { value: "dex", label: "Dex #" },
@@ -34,9 +11,16 @@ const sortOptions = [
 export default function Collection({ collection, onSelect, selectedPokemon }) {
   const [sortBy, setSortBy] = useState("dex");
   const [filter, setFilter] = useState("");
+  const [rarityStyles, setRarityStyles] = useState({});
+
+  useEffect(() => {
+    fetch("/data/rarityStyles.json")
+      .then(res => res.json())
+      .then(setRarityStyles)
+      .catch(() => setRarityStyles({}));
+  }, []);
 
   function getRarityRank(rarity) {
-    // Lower is more common
     const order = ["common", "uncommon", "rare", "wild", "legendary"];
     const idx = order.indexOf(rarity);
     return idx === -1 ? 99 : idx;
@@ -55,60 +39,32 @@ export default function Collection({ collection, onSelect, selectedPokemon }) {
   });
 
   return (
-    <div style={{
-      width: '100%',
-      minWidth: 0,
-      maxWidth: '100%',
-      height: '100%',
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      background: 'transparent',
-      padding: 0,
-      margin: 0
-    }}>
-      <div style={{
-        background: '#181818',
-        borderRadius: 12,
-        boxShadow: '0 2px 12px #0006',
-        padding: 16,
-        flex: 1,
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+    <div className="collection-root">
+      <div className="collection-panel">
+        <div className="collection-controls">
           <input
             type="text"
             placeholder="Filter by name..."
             value={filter}
             onChange={e => setFilter(e.target.value)}
-            style={{ padding: 6, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff", minWidth: 120 }}
+            className="collection-filter-input"
           />
           <select
             value={sortBy}
             onChange={e => setSortBy(e.target.value)}
-            style={{ padding: 6, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
+            className="collection-sort-select"
           >
             {sortOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 8,
-          justifyItems: "center",
-          alignItems: "center"
-        }}>
+        <div className="collection-grid">
           {filtered.length === 0 ? (
-            <div style={{ color: "#aaa", gridColumn: 'span 3' }}>No Pokémon match your filter.</div>
+            <div className="collection-empty">No Pokémon match your filter.</div>
           ) : (
             filtered.map((poke, idx) => {
-              const rarityStyle = RARITY_STYLES[poke.rarity] || { color: '#fff', gradient: 'none' };
+              const rarityStyle = rarityStyles[poke.rarity] || { color: '#fff', gradient: 'none' };
               return (
                 <div
                   key={poke.dexNumber}
@@ -116,25 +72,18 @@ export default function Collection({ collection, onSelect, selectedPokemon }) {
                     "collection-card" +
                     (selectedPokemon && selectedPokemon.dexNumber === poke.dexNumber ? " selected" : "")
                   }
-                  style={{
-                    background: "#333",
-                    borderRadius: 8,
-                    padding: 6,
-                    textAlign: "center",
-                    cursor: "pointer",
-                    width: 90,
-                    height: 90,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
                   onClick={() => onSelect(poke)}
                 >
-                  <img src={poke.image} alt={poke.name} style={{ width: 44, height: 44, marginBottom: 2 }} />
-                  <div style={{ fontWeight: "bold", fontSize: 13 }}>{poke.name}</div>
-                  <div style={{ fontSize: 11, color: rarityStyle.color }}>{poke.rarity.charAt(0).toUpperCase() + poke.rarity.slice(1)}</div>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>x{poke.amount || 1}</div>
+                  <img
+                    src={poke.image.startsWith('/') ? poke.image : '/' + poke.image}
+                    alt={poke.name}
+                    className="collection-img"
+                  />
+                  <div className="collection-name">{poke.name}</div>
+                  <div className="collection-rarity" style={{ color: rarityStyle.color }}>
+                    {poke.rarity.charAt(0).toUpperCase() + poke.rarity.slice(1)}
+                  </div>
+                  <div className="collection-amount">x{poke.amount || 1}</div>
                 </div>
               );
             })

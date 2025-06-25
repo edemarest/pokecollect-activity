@@ -1,0 +1,59 @@
+.rolllog-root {
+  background: #363636;
+  border-radius: 10px;
+  margin-top: 18px;
+  padding: 12px 10px 8px 10px;
+  font-size: 1.08em;
+  min-height: 48px;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px #0004;
+}
+
+.rolllog-title {
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.rolllog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rolllog-entry {
+  margin-bottom: 2px;
+  color: #eee;
+  font-size: 0.98em;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.rolllog-username {
+  font-weight: bold;
+  color: #4fc3f7;
+}
+
+.rolllog-pokemon {
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.rolllog-rarity {
+  font-size: 0.95em;
+  opacity: 0.85;
+  margin-left: 2px;
+}
+
+.rolllog-text {
+  color: #bdbdbd;
+}
+
+.rolllog-system {
+  color: #ffd54f;
+  font-style: italic;
+  font-size: 0.98em;
+}

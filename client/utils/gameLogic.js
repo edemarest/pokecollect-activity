@@ -57,6 +57,17 @@ export function checkDraw(board) {
   return board.every(row => row.every(cell => cell !== null));
 }
 
+export function weightedRandomPokemon(pokemonList) {
+  const totalWeight = pokemonList.reduce((sum, p) => sum + (p.odds || 1), 0);
+  let rand = Math.random() * totalWeight;
+  for (const p of pokemonList) {
+    rand -= (p.odds || 1);
+    if (rand <= 0) return p;
+  }
+  // Fallback (shouldn't happen)
+  return pokemonList[pokemonList.length - 1];
+}
+
 export default {
   ROWS,
   COLS,

@@ -1,0 +1,107 @@
+export const BOOSTS = [
+    // Timed Luck Boosts
+    {
+        id: "double-luck-1m",
+        name: "Double Luck",
+        type: "luck",
+        multiplier: 2,
+        duration: 60, // 1 min
+        price: 50,
+        description: "Doubles your luck for 1 minute (Uncommon+ much more likely)",
+        icon: "/icons/double-luck.png"
+    },
+    {
+        id: "double-luck-5m",
+        name: "Double Luck",
+        type: "luck",
+        multiplier: 2,
+        duration: 300, // 5 min
+        price: 200,
+        description: "Doubles your luck for 5 minutes (Uncommon+ much more likely)",
+        icon: "/icons/double-luck.png"
+    },
+    {
+        id: "double-luck-15m",
+        name: "Double Luck",
+        type: "luck",
+        multiplier: 2,
+        duration: 900, // 15 min
+        price: 500,
+        description: "Doubles your luck for 15 minutes (Uncommon+ much more likely)",
+        icon: "/icons/double-luck.png"
+    },
+    {
+        id: "ultra-luck-1m",
+        name: "Ultra Luck",
+        type: "luck",
+        multiplier: 10,
+        duration: 60, // 1 min
+        price: 300,
+        description: "Ultra luck for 1 minute (Rare+ much more likely)",
+        icon: "/icons/ultra-luck.png"
+    },
+    {
+        id: "ultra-luck-5m",
+        name: "Ultra Luck",
+        type: "luck",
+        multiplier: 10,
+        duration: 300, // 5 min
+        price: 1200,
+        description: "Ultra luck for 5 minutes (Rare+ much more likely)",
+        icon: "/icons/ultra-luck.png"
+    },
+    {
+        id: "ultra-luck-15m",
+        name: "Ultra Luck",
+        type: "luck",
+        multiplier: 10,
+        duration: 900, // 15 min
+        price: 3000,
+        description: "Ultra luck for 15 minutes (Rare+ much more likely)",
+        icon: "/icons/ultra-luck.png"
+    },
+
+    // Roll Speed Boosts
+    {
+        id: "double-speed-1m",
+        name: "Double Roll Speed",
+        type: "speed",
+        multiplier: 2,
+        duration: 60, // 1 min
+        price: 40,
+        description: "Roll twice as fast for 1 minute",
+        icon: "/icons/double-speed.png"
+    },
+    {
+        id: "double-speed-5m",
+        name: "Double Roll Speed",
+        type: "speed",
+        multiplier: 2,
+        duration: 300, // 5 min
+        price: 150,
+        description: "Roll twice as fast for 5 minutes",
+        icon: "/icons/double-speed.png"
+    },
+    {
+        id: "double-speed-15m",
+        name: "Double Roll Speed",
+        type: "speed",
+        multiplier: 2,
+        duration: 900, // 15 min
+        price: 400,
+        description: "Roll twice as fast for 15 minutes",
+        icon: "/icons/double-speed.png"
+    },
+
+    // Auto-Roll
+    {
+        id: "auto-roll-1h",
+        name: "Auto-Roll",
+        type: "auto",
+        multiplier: 1,
+        duration: 3600, // 1 hour
+        price: 2000,
+        description: "Auto-roll for 1 hour (no manual actions allowed)",
+        icon: "/icons/auto-roll.png"
+    }
+];
