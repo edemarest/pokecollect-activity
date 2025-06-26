@@ -8,11 +8,14 @@ const sortOptions = [
   { value: "name", label: "Name" }
 ];
 
+// Collection displays the user's Pokémon collection with sorting/filtering
 export default function Collection({ collection, onSelect, selectedPokemon }) {
+  // --- State ---
   const [sortBy, setSortBy] = useState("dex");
   const [filter, setFilter] = useState("");
   const [rarityStyles, setRarityStyles] = useState({});
 
+  // --- Effect: Fetch rarity styles ---
   useEffect(() => {
     fetch("/data/rarityStyles.json")
       .then(res => res.json())
@@ -20,16 +23,17 @@ export default function Collection({ collection, onSelect, selectedPokemon }) {
       .catch(() => setRarityStyles({}));
   }, []);
 
+  // --- Helpers ---
   function getRarityRank(rarity) {
     const order = ["common", "uncommon", "rare", "wild", "legendary"];
     const idx = order.indexOf(rarity);
     return idx === -1 ? 99 : idx;
   }
 
+  // --- Filtering and sorting ---
   let filtered = collection.filter(poke =>
     poke.name.toLowerCase().includes(filter.toLowerCase())
   );
-
   filtered = filtered.sort((a, b) => {
     if (sortBy === "dex") return a.dexNumber - b.dexNumber;
     if (sortBy === "rarity") return getRarityRank(a.rarity) - getRarityRank(b.rarity);
@@ -38,6 +42,7 @@ export default function Collection({ collection, onSelect, selectedPokemon }) {
     return 0;
   });
 
+  // --- Render ---
   return (
     <div className="collection-root">
       <div className="collection-panel">

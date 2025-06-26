@@ -9,7 +9,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/arbok.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Pidgey",
@@ -19,7 +19,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/pidgey.png",
-      "amount": 1
+      "amount": 2
     },
     {
       "name": "Mankey",
@@ -29,7 +29,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/mankey.png",
-      "amount": 1
+      "amount": 6
     },
     {
       "name": "Mew",
@@ -69,7 +69,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/bellsprout.png",
-      "amount": 1
+      "amount": 4
     },
     {
       "name": "Raichu",
@@ -79,7 +79,7 @@
       "odds": 5,
       "power": 70,
       "image": "/pokemon/raichu.png",
-      "amount": 1
+      "amount": 2
     },
     {
       "name": "Rattata",
@@ -89,7 +89,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/rattata.png",
-      "amount": 1
+      "amount": 5
     },
     {
       "name": "Sandshrew",
@@ -99,7 +99,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/sandshrew.png",
-      "amount": 4
+      "amount": 7
     },
     {
       "name": "Ditto",
@@ -119,7 +119,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/wartortle.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Tangela",
@@ -149,7 +149,7 @@
       "odds": 20,
       "power": 40,
       "image": "/pokemon/vulpix.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Spearow",
@@ -159,7 +159,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/spearow.png",
-      "amount": 5
+      "amount": 8
     },
     {
       "name": "Articuno",
@@ -169,7 +169,7 @@
       "odds": 0.2,
       "power": 200,
       "image": "/pokemon/articuno.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Blastoise",
@@ -179,7 +179,7 @@
       "odds": 5,
       "power": 80,
       "image": "/pokemon/blastoise.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Hitmonchan",
@@ -189,7 +189,7 @@
       "odds": 5,
       "power": 60,
       "image": "/pokemon/hitmonchan.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Growlithe",
@@ -209,7 +209,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/doduo.png",
-      "amount": 5
+      "amount": 9
     },
     {
       "name": "Haunter",
@@ -219,7 +219,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/haunter.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Parasect",
@@ -239,7 +239,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/butterfree.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Starmie",
@@ -249,7 +249,7 @@
       "odds": 5,
       "power": 60,
       "image": "/pokemon/starmie.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Rapidash",
@@ -279,7 +279,7 @@
       "odds": 0.2,
       "power": 200,
       "image": "/pokemon/moltres.png",
-      "amount": 2
+      "amount": 1
     },
     {
       "name": "Hypno",
@@ -299,7 +299,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/grimer.png",
-      "amount": 2
+      "amount": 5
     },
     {
       "name": "Venonat",
@@ -319,7 +319,7 @@
       "odds": 0.2,
       "power": 250,
       "image": "/pokemon/mewtwo.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Meowth",
@@ -329,7 +329,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/meowth.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Omastar",
@@ -339,7 +339,7 @@
       "odds": 5,
       "power": 60,
       "image": "/pokemon/omastar.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Lapras",
@@ -359,7 +359,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/seaking.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Slowpoke",
@@ -369,7 +369,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/slowpoke.png",
-      "amount": 2
+      "amount": 5
     },
     {
       "name": "Psyduck",
@@ -379,7 +379,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/psyduck.png",
-      "amount": 3
+      "amount": 8
     },
     {
       "name": "Golem",
@@ -399,7 +399,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/geodude.png",
-      "amount": 2
+      "amount": 5
     },
     {
       "name": "Gastly",
@@ -409,7 +409,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/gastly.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Kadabra",
@@ -429,7 +429,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/metapod.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Porygon",
@@ -442,16 +442,6 @@
       "amount": 2
     },
     {
-      "name": "Charmander",
-      "dexNumber": 4,
-      "dexName": "charmander",
-      "rarity": "common",
-      "odds": 100,
-      "power": 10,
-      "image": "/pokemon/charmander.png",
-      "amount": 3
-    },
-    {
       "name": "Shellder",
       "dexNumber": 90,
       "dexName": "shellder",
@@ -459,7 +449,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/shellder.png",
-      "amount": 1
+      "amount": 2
     },
     {
       "name": "Bulbasaur",
@@ -469,7 +459,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/bulbasaur.png",
-      "amount": 1
+      "amount": 4
     },
     {
       "name": "Zubat",
@@ -479,7 +469,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/zubat.png",
-      "amount": 2
+      "amount": 4
     },
     {
       "name": "Weezing",
@@ -489,7 +479,7 @@
       "odds": 20,
       "power": 30,
       "image": "/pokemon/weezing.png",
-      "amount": 1
+      "amount": 2
     },
     {
       "name": "Cubone",
@@ -499,7 +489,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/cubone.png",
-      "amount": 2
+      "amount": 3
     },
     {
       "name": "Machop",
@@ -509,7 +499,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/machop.png",
-      "amount": 1
+      "amount": 5
     },
     {
       "name": "Oddish",
@@ -519,7 +509,7 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/oddish.png",
-      "amount": 1
+      "amount": 2
     },
     {
       "name": "Caterpie",
@@ -529,26 +519,440 @@
       "odds": 100,
       "power": 10,
       "image": "/pokemon/caterpie.png",
+      "amount": 4
+    },
+    {
+      "name": "Seel",
+      "dexNumber": 86,
+      "dexName": "seel",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/seel.png",
+      "amount": 3
+    },
+    {
+      "name": "Eevee",
+      "dexNumber": 133,
+      "dexName": "eevee",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 50,
+      "image": "/pokemon/eevee.png",
+      "amount": 1
+    },
+    {
+      "name": "Weedle",
+      "dexNumber": 13,
+      "dexName": "weedle",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/weedle.png",
+      "amount": 7
+    },
+    {
+      "name": "Kakuna",
+      "dexNumber": 14,
+      "dexName": "kakuna",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/kakuna.png",
+      "amount": 4
+    },
+    {
+      "name": "Venomoth",
+      "dexNumber": 49,
+      "dexName": "venomoth",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/venomoth.png",
+      "amount": 2
+    },
+    {
+      "name": "Jigglypuff",
+      "dexNumber": 39,
+      "dexName": "jigglypuff",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/jigglypuff.png",
+      "amount": 5
+    },
+    {
+      "name": "Rhyhorn",
+      "dexNumber": 111,
+      "dexName": "rhyhorn",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/rhyhorn.png",
+      "amount": 3
+    },
+    {
+      "name": "Exeggcute",
+      "dexNumber": 102,
+      "dexName": "exeggcute",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/exeggcute.png",
+      "amount": 3
+    },
+    {
+      "name": "Marowak",
+      "dexNumber": 105,
+      "dexName": "marowak",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/marowak.png",
+      "amount": 2
+    },
+    {
+      "name": "Machoke",
+      "dexNumber": 67,
+      "dexName": "machoke",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/machoke.png",
+      "amount": 3
+    },
+    {
+      "name": "Paras",
+      "dexNumber": 46,
+      "dexName": "paras",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/paras.png",
+      "amount": 6
+    },
+    {
+      "name": "Muk",
+      "dexNumber": 89,
+      "dexName": "muk",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/muk.png",
+      "amount": 2
+    },
+    {
+      "name": "Clefable",
+      "dexNumber": 36,
+      "dexName": "clefable",
+      "rarity": "rare",
+      "odds": 5,
+      "power": 60,
+      "image": "/pokemon/clefable.png",
+      "amount": 1
+    },
+    {
+      "name": "Koffing",
+      "dexNumber": 109,
+      "dexName": "koffing",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/koffing.png",
+      "amount": 4
+    },
+    {
+      "name": "Goldeen",
+      "dexNumber": 118,
+      "dexName": "goldeen",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/goldeen.png",
+      "amount": 4
+    },
+    {
+      "name": "Onix",
+      "dexNumber": 95,
+      "dexName": "onix",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/onix.png",
+      "amount": 1
+    },
+    {
+      "name": "Pidgeotto",
+      "dexNumber": 17,
+      "dexName": "pidgeotto",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/pidgeotto.png",
+      "amount": 2
+    },
+    {
+      "name": "Krabby",
+      "dexNumber": 98,
+      "dexName": "krabby",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/krabby.png",
+      "amount": 2
+    },
+    {
+      "name": "Dewgong",
+      "dexNumber": 87,
+      "dexName": "dewgong",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/dewgong.png",
+      "amount": 1
+    },
+    {
+      "name": "Nidorino",
+      "dexNumber": 33,
+      "dexName": "nidorino",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/nidorino.png",
+      "amount": 1
+    },
+    {
+      "name": "Scyther",
+      "dexNumber": 123,
+      "dexName": "scyther",
+      "rarity": "rare",
+      "odds": 5,
+      "power": 60,
+      "image": "/pokemon/scyther.png",
+      "amount": 1
+    },
+    {
+      "name": "Golbat",
+      "dexNumber": 42,
+      "dexName": "golbat",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/golbat.png",
+      "amount": 2
+    },
+    {
+      "name": "Diglett",
+      "dexNumber": 50,
+      "dexName": "diglett",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/diglett.png",
+      "amount": 3
+    },
+    {
+      "name": "Omanyte",
+      "dexNumber": 138,
+      "dexName": "omanyte",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/omanyte.png",
+      "amount": 1
+    },
+    {
+      "name": "Staryu",
+      "dexNumber": 120,
+      "dexName": "staryu",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/staryu.png",
+      "amount": 1
+    },
+    {
+      "name": "Beedrill",
+      "dexNumber": 15,
+      "dexName": "beedrill",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/beedrill.png",
+      "amount": 1
+    },
+    {
+      "name": "Magnemite",
+      "dexNumber": 81,
+      "dexName": "magnemite",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/magnemite.png",
+      "amount": 1
+    },
+    {
+      "name": "Squirtle",
+      "dexNumber": 7,
+      "dexName": "squirtle",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/squirtle.png",
+      "amount": 1
+    },
+    {
+      "name": "Magmar",
+      "dexNumber": 126,
+      "dexName": "magmar",
+      "rarity": "rare",
+      "odds": 5,
+      "power": 60,
+      "image": "/pokemon/magmar.png",
+      "amount": 1
+    },
+    {
+      "name": "Abra",
+      "dexNumber": 63,
+      "dexName": "abra",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/abra.png",
+      "amount": 4
+    },
+    {
+      "name": "Ekans",
+      "dexNumber": 23,
+      "dexName": "ekans",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/ekans.png",
+      "amount": 3
+    },
+    {
+      "name": "Nidoran♀",
+      "dexNumber": 29,
+      "dexName": "nidoran-f",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/nidoran-f.png",
+      "amount": 1
+    },
+    {
+      "name": "Ponyta",
+      "dexNumber": 77,
+      "dexName": "ponyta",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/ponyta.png",
+      "amount": 1
+    },
+    {
+      "name": "Magikarp",
+      "dexNumber": 129,
+      "dexName": "magikarp",
+      "rarity": "common",
+      "odds": 100,
+      "power": 5,
+      "image": "/pokemon/magikarp.png",
+      "amount": 2
+    },
+    {
+      "name": "Poliwhirl",
+      "dexNumber": 61,
+      "dexName": "poliwhirl",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/poliwhirl.png",
+      "amount": 1
+    },
+    {
+      "name": "Nidoran♂",
+      "dexNumber": 32,
+      "dexName": "nidoran-m",
+      "rarity": "common",
+      "odds": 100,
+      "power": 10,
+      "image": "/pokemon/nidoran-m.png",
+      "amount": 2
+    },
+    {
+      "name": "Gloom",
+      "dexNumber": 44,
+      "dexName": "gloom",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/gloom.png",
+      "amount": 1
+    },
+    {
+      "name": "Sandslash",
+      "dexNumber": 28,
+      "dexName": "sandslash",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/sandslash.png",
+      "amount": 1
+    },
+    {
+      "name": "Zapdos",
+      "dexNumber": 145,
+      "dexName": "zapdos",
+      "rarity": "legendary",
+      "odds": 0.2,
+      "power": 200,
+      "image": "/pokemon/zapdos.png",
+      "amount": 1
+    },
+    {
+      "name": "Slowbro",
+      "dexNumber": 80,
+      "dexName": "slowbro",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/slowbro.png",
+      "amount": 1
+    },
+    {
+      "name": "Primeape",
+      "dexNumber": 57,
+      "dexName": "primeape",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/primeape.png",
+      "amount": 2
+    },
+    {
+      "name": "Weepinbell",
+      "dexNumber": 70,
+      "dexName": "weepinbell",
+      "rarity": "uncommon",
+      "odds": 20,
+      "power": 30,
+      "image": "/pokemon/weepinbell.png",
       "amount": 1
     }
   ],
   "power": 0,
-  "rubies": 1000000,
+  "rubies": 1000260,
   "avatar": null,
   "activeBoosts": [
     {
       "id": "auto-roll-1h",
       "type": "auto",
       "multiplier": 1,
-      "expiresAt": 1750893006154
-    },
-    {
-      "id": "double-speed-5m",
-      "type": "speed",
-      "multiplier": 2,
-      "expiresAt": 1750891212168
+      "expiresAt": 1750901708363
     }
   ],
-  "avatarDexNumber": 151,
-  "avatarImage": "/pokemon/mew.png"
+  "avatarDexNumber": 4,
+  "avatarImage": "/pokemon/charmander.png"
 }

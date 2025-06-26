@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/top-bar.css";
 
+// CurrencyBar displays the user's power and rubies
 export default function CurrencyBar({ power = 0, rubies = 0 }) {
   return (
     <div className="currency-bar">

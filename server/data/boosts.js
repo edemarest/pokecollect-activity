@@ -1,3 +1,5 @@
+// --- Boosts Data ---
+// List of available boosts for the shop, including type, duration, price, and icon
 export const BOOSTS = [
     // Timed Luck Boosts
     {

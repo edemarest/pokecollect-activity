@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+// PokemonInfoPanel displays details and actions for a selected Pokémon
 export default function PokemonInfoPanel({ pokemon, onSell, onSetAvatar, isAvatar, isSaving }) {
+  // --- State ---
   const [sellAmount, setSellAmount] = useState(1);
   const [rarityStyles, setRarityStyles] = useState({});
 
+  // --- Effect: Fetch rarity styles ---
   useEffect(() => {
     fetch("/data/rarityStyles.json")
       .then(res => res.json())
@@ -13,15 +16,18 @@ export default function PokemonInfoPanel({ pokemon, onSell, onSetAvatar, isAvata
 
   if (!pokemon) return null;
 
+  // --- Helpers ---
   const maxAmount = pokemon.amount || 1;
   const rarityStyle = rarityStyles[pokemon.rarity] || { color: '#fff', gradient: 'none' };
 
+  // --- Handlers ---
   function handleSell() {
     if (sellAmount > 0 && sellAmount <= maxAmount) {
       onSell(sellAmount);
     }
   }
 
+  // --- Render ---
   return (
     <div className="pokemon-info-panel">
       <div className="pokemon-info-panel-content">

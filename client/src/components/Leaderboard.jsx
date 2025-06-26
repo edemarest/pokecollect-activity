@@ -3,7 +3,7 @@ import { getLeaderboard } from "../utils/api";
 import "../styles/leaderboard.css";
 import RollLog from "./RollLog";
 
-// Simple error boundary for debugging
+// ErrorBoundary: Catches and displays errors in leaderboard
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -13,8 +13,7 @@ class ErrorBoundary extends React.Component {
     return { hasError: true, error };
   }
   componentDidCatch(error, info) {
-    // You can log error info here
-    console.error("Leaderboard error:", error, info);
+    // Error logging (optional)
   }
   render() {
     if (this.state.hasError) {
@@ -24,23 +23,26 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Leaderboard displays player rankings and avatars
 export default function Leaderboard({ playerUserId, collection, showAvatars, usernamesMap, refreshKey, rollLog }) {
+  // --- State ---
   const [players, setPlayers] = useState([]);
   const [dexToName, setDexToName] = useState({});
 
+  // --- Effects: Fetch leaderboard and mapping ---
   useEffect(() => {
     async function fetchLeaderboard() {
       try {
         const data = await getLeaderboard();
         setPlayers(data);
       } catch (err) {
-        console.error("Failed to fetch leaderboard:", err);
+        // Optionally handle error
       }
     }
     fetchLeaderboard();
     const interval = setInterval(fetchLeaderboard, 10000);
     return () => clearInterval(interval);
-  }, [refreshKey]); // refetch when refreshKey changes
+  }, [refreshKey]);
 
   useEffect(() => {
     fetch("/data/dexToName.json")
@@ -49,6 +51,7 @@ export default function Leaderboard({ playerUserId, collection, showAvatars, use
       .catch(() => setDexToName({}));
   }, []);
 
+  // --- Render ---
   return (
     <ErrorBoundary>
       <div className="leaderboard-root">

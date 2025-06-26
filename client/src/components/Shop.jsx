@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./../styles/shop.css";
 
-// Helper to group boosts by name/category
+// Helper: Group boosts by name/category
 function groupBoosts(boosts) {
   const groups = {};
   boosts.forEach(boost => {
@@ -19,11 +19,14 @@ const CATEGORY_COLORS = {
   "Auto-Roll": "#ff8a65"
 };
 
+// Shop displays available boosts and handles purchases
 export default function Shop({ userId, rubies, onBuyBoost, selectedBoost, setSelectedBoost }) {
+  // --- State ---
   const [boosts, setBoosts] = useState([]);
   const [isBuying, setIsBuying] = useState(false);
   const [error, setError] = useState(null);
 
+  // --- Effects: Fetch boosts data ---
   useEffect(() => {
     fetch("/data/boosts.json")
       .then(res => res.json())
@@ -31,6 +34,7 @@ export default function Shop({ userId, rubies, onBuyBoost, selectedBoost, setSel
       .catch(() => setBoosts([]));
   }, []);
 
+  // --- Handlers ---
   function handleBuy(boost, quantity) {
     if (!userId) return;
     setIsBuying(true);
@@ -51,36 +55,35 @@ export default function Shop({ userId, rubies, onBuyBoost, selectedBoost, setSel
       });
   }
 
-  // Group boosts by name/category
+  // --- Group boosts by name/category ---
   const grouped = groupBoosts(boosts);
 
+  // --- Render ---
   return (
     <div className="shop-root shop-categories-root">
       <div className="shop-categories-scroll">
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="shop-category-section">
-            <div
-              className="shop-category-label"
-              style={{ background: CATEGORY_COLORS[category] || "#bdbdbd" }}
-            >
-              {category}
-            </div>
+            <div className="shop-category-label">{category}</div>
+            <div className="shop-category-divider" />
             <div className="shop-category-grid">
-              {items.map(boost => (
-                <button
-                  key={boost.id}
-                  className={`shop-category-grid-item${selectedBoost && selectedBoost.id === boost.id ? " selected" : ""}`}
-                  onClick={() => setSelectedBoost(boost)} // <-- use the prop!
-                >
-                  <img src={boost.icon} alt={boost.name} className="shop-category-icon" />
-                  <div className="shop-category-time">
-                    {boost.duration >= 60 ? `${boost.duration / 60}m` : `${boost.duration}s`}
+              {items.map(boost => {
+                const isSelected = selectedBoost && selectedBoost.id === boost.id;
+                return (
+                  <div key={boost.id} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <button
+                      className={`shop-category-grid-item${isSelected ? " selected" : ""}`}
+                      onClick={() => setSelectedBoost(isSelected ? null : boost)}
+                      tabIndex={0}
+                    >
+                      <img src={boost.icon} alt={boost.name} className="shop-category-icon" />
+                    </button>
+                    <div className="shop-category-price">
+                      {boost.price} <span className="shop-category-ruby">💎</span>
+                    </div>
                   </div>
-                  <div className="shop-category-price">
-                    {boost.price} <span className="shop-category-ruby">💎</span>
-                  </div>
-                </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}

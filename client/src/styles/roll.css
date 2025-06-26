@@ -31,12 +31,11 @@
     border 0.5s,
     background 0.5s;
   z-index: 2;
+  transform: scale(1);
 }
 
 .rollscreen-pokemon-img.expanded {
-  width: 200px;
-  height: 200px;
-  transform: scale(1.2) rotate(-8deg);
+  /* 20% larger via scale */
   box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
   border: 3px solid #ffd700;
   background: #fffbe6;
@@ -46,12 +45,10 @@
     box-shadow 0.5s,
     border 0.5s,
     background 0.5s;
+  transform: scale(1.2);
 }
 
 .rollscreen-pokemon-img.settling {
-  width: 200px;
-  height: 200px;
-  transform: scale(1.15) rotate(-4deg);
   box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
   border: 3px solid #ffd700;
   background: #fffbe6;
@@ -61,12 +58,11 @@
     box-shadow 0.5s,
     border 0.5s,
     background 0.5s;
+  transform: scale(1.2);
 }
 
 .rollscreen-pokemon-img.settled {
-  width: 180px;
-  height: 180px;
-  transform: scale(1.05) rotate(0deg);
+  /* Back to normal size */
   box-shadow: 0 0 32px 8px gold, 0 2px 12px #0008;
   border: 3px solid #ffd700;
   background: #fffbe6;
@@ -76,6 +72,7 @@
     box-shadow 0.5s,
     border 0.5s,
     background 0.5s;
+  transform: scale(1);
 }
 
 .rollscreen-pokemon-name {

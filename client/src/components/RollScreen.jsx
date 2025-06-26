@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "../styles/roll.css";
 
+// RollScreen handles rolling, claiming, and discarding Pokémon
 export default function RollScreen({
   onRoll,
   rolledPokemon,
@@ -10,7 +11,17 @@ export default function RollScreen({
   pokemonList,
   activeBoosts = []
 }) {
+  // --- State ---
   const [rarityStyles, setRarityStyles] = useState({});
+  const [isRolling, setIsRolling] = useState(false);
+  const [flashPokemon, setFlashPokemon] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+  const [settling, setSettling] = useState(false);
+  const [settled, setSettled] = useState(false);
+  const [autoRollEnabled, setAutoRollEnabled] = useState(false);
+  const [readyToExpand, setReadyToExpand] = useState(false);
+
+  // --- Effect: Fetch rarity styles ---
   useEffect(() => {
     fetch("/data/rarityStyles.json")
       .then(res => res.json())
@@ -18,21 +29,15 @@ export default function RollScreen({
       .catch(() => setRarityStyles({}));
   }, []);
 
-  const [isRolling, setIsRolling] = useState(false);
-  const [flashPokemon, setFlashPokemon] = useState(null);
-  const [expanded, setExpanded] = useState(false);
-  const [settling, setSettling] = useState(false);
-  const [settled, setSettled] = useState(false);
-  const [autoRollEnabled, setAutoRollEnabled] = useState(false);
-
+  // --- Effect: Update auto-roll state when boosts change ---
   useEffect(() => {
     setAutoRollEnabled(isAutoRollActive());
   }, [activeBoosts]);
 
+  // --- Helpers ---
   function getRandomPokemon() {
     return pokemonList[Math.floor(Math.random() * pokemonList.length)];
   }
-
   function getSpeedMultiplier() {
     const now = Date.now();
     const speedBoosts = activeBoosts
@@ -42,8 +47,7 @@ export default function RollScreen({
       ? Math.max(...speedBoosts.map(b => b.multiplier))
       : 1;
   }
-
-  // Memoize isAutoRollActive so it doesn't change every render
+  // Memoized: Check if auto-roll is active
   const isAutoRollActive = useCallback(() => {
     const now = Date.now();
     return (
@@ -52,6 +56,7 @@ export default function RollScreen({
     );
   }, [activeBoosts]);
 
+  // --- Handlers ---
   async function handleRollAnimation() {
     const now = () => (Date.now() / 1000).toFixed(2);
 
@@ -61,19 +66,29 @@ export default function RollScreen({
     setSettled(false);
     console.log(`[${now()}] --- ROLL START ---`);
 
-    let speedMultiplier = getSpeedMultiplier();
-    let flashes = 32;
-    let delay = 40 / speedMultiplier;
-
+    // --- Perfectly consistent flash animation duration ---
+    const speedMultiplier = getSpeedMultiplier();
+    const totalFlashDuration = 1200 / speedMultiplier; // ms, adjust as needed
+    const flashes = 32;
+    const baseDelay = totalFlashDuration / flashes;
     let current = null;
-    for (let i = 0; i < flashes; i++) {
+    const start = Date.now();
+    let i = 0;
+    while (Date.now() - start < totalFlashDuration) {
       current = getRandomPokemon();
       setFlashPokemon(current);
-      await new Promise(res => setTimeout(res, delay));
-      delay = Math.min(delay * 1.13, 300 / speedMultiplier);
+      await new Promise(res => setTimeout(res, baseDelay));
+      i++;
+    }
+    // Ensure at least one flash happens
+    if (i === 0) {
+      setFlashPokemon(getRandomPokemon());
+      await new Promise(res => setTimeout(res, baseDelay));
     }
     setFlashPokemon(null);
-    setExpanded(true);
+    // Instead of waiting for expanded, just trigger expand and continue
+    setReadyToExpand(true); // Use effect will handle expanding
+    await new Promise(res => setTimeout(res, 30)); // Give React a frame for expand
     console.log(`[${now()}] EXPANDED (glow/big)`);
     onRoll();
 
@@ -149,6 +164,17 @@ export default function RollScreen({
     else if (settling) imgClass += " settling";
     else if (settled) imgClass += " settled";
   }
+
+  useEffect(() => {
+    if (readyToExpand) {
+      // Next tick, set expanded to true
+      const id = setTimeout(() => {
+        setExpanded(true);
+        setReadyToExpand(false);
+      }, 0);
+      return () => clearTimeout(id);
+    }
+  }, [readyToExpand]);
 
   return (
     <div className="rollscreen-root">

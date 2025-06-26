@@ -121,7 +121,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 16px;
-  padding: 12px;
+  padding: 5px;
   justify-items: center;
   align-items: start;
 }
@@ -138,8 +138,6 @@
   text-align: center;
   cursor: pointer;
   width: 100%;
-  max-width: 120px;
-  min-width: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;

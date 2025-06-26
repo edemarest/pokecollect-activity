@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../styles/log.css";
 
+// RollLog displays recent rare roll events
 export default function RollLog({ log = [] }) {
+  // --- State: Rarity styles for coloring ---
   const [rarityStyles, setRarityStyles] = useState({});
+
+  // --- Effect: Fetch rarity styles ---
   useEffect(() => {
     fetch("/data/rarityStyles.json")
       .then(res => res.json())
@@ -10,6 +14,7 @@ export default function RollLog({ log = [] }) {
       .catch(() => setRarityStyles({}));
   }, []);
 
+  // --- Render: List of recent rolls ---
   if (!log.length) return null;
   return (
     <div className="rolllog-root">

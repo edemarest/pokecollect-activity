@@ -1,12 +1,13 @@
+// --- Roll API ---
 import express from "express";
 const router = express.Router();
 import { broadcastRollLog } from "../ws.js";
 import fs from "fs/promises";
 import path from "path";
 import { rollLog, MAX_LOG } from "../logStore.js";
-import { getUserData, removeExpiredBoosts } from "../utils/userData.js"; // Add this import
+import { getUserData, removeExpiredBoosts } from "../utils/userData.js";
 
-// Weighted random selection
+// Weighted random selection for Pokémon
 function weightedRandomPokemon(list) {
   const totalWeight = list.reduce((sum, p) => sum + (p.odds || 1), 0);
   let rand = Math.random() * totalWeight;
@@ -17,14 +18,11 @@ function weightedRandomPokemon(list) {
   return list[list.length - 1];
 }
 
-// POST /roll
+// POST /api/roll - Roll for a Pokémon
 router.post("/", async (req, res) => {
   try {
-    console.log("[/api/roll] Incoming request body:", req.body);
-
     const { userId } = req.body;
     if (!userId) {
-      console.error("[/api/roll] Missing userId in request body");
       return res.status(400).json({ error: "Missing userId" });
     }
 
@@ -38,19 +36,17 @@ router.post("/", async (req, res) => {
       ? Math.max(...luckBoosts.map(b => b.multiplier))
       : 1;
 
-    // Try to load the Pokémon data using fs.readFile
+    // Load Pokémon data
     const pokemonPath = path.resolve("data/pokemon.json");
     let pokemonData;
     try {
       const file = await fs.readFile(pokemonPath, "utf-8");
       pokemonData = JSON.parse(file);
-      console.log("[/api/roll] Loaded pokemonData, count:", pokemonData.length);
     } catch (importErr) {
-      console.error("[/api/roll] Failed to load pokemon.json:", importErr);
       return res.status(500).json({ error: "Failed to load Pokémon data" });
     }
 
-    // Group pokemons by rarity
+    // Group Pokémon by rarity
     const byRarity = {
       common: [],
       uncommon: [],
@@ -63,7 +59,7 @@ router.post("/", async (req, res) => {
       if (byRarity[p.rarity]) byRarity[p.rarity].push(p);
     }
 
-    // Base weights (adjust as needed for your game)
+    // Base weights
     let weights = {
       common: 80,
       uncommon: 15,
@@ -72,89 +68,43 @@ router.post("/", async (req, res) => {
       mythical: 0.2,
       wild: 0.5
     };
-
-    // Save original weights for comparison
-    const originalWeights = { ...weights };
-
     // Apply luck multiplier to all but common
     for (const rarity of ["uncommon", "rare", "legendary", "mythical", "wild"]) {
       weights[rarity] *= luckMultiplier;
     }
 
-    // Calculate totalWeight ONCE
-    const totalWeight = Object.entries(weights)
-      .reduce((sum, [rarity, w]) => sum + (byRarity[rarity]?.length ? w : 0), 0);
-
-    const originalTotalWeight = Object.entries(originalWeights)
-      .reduce((sum, [rarity, w]) => sum + (byRarity[rarity]?.length ? w : 0), 0);
-
-    // Log current luck boost and boosted rates
-    console.log(`[ROLL] Luck boost multiplier: x${luckMultiplier}`);
-    console.log("[ROLL] Rarity rates (normal vs boosted):");
-    for (const rarity of Object.keys(weights)) {
-      if (!byRarity[rarity]?.length) continue;
-      const normalPct = ((originalWeights[rarity] / originalTotalWeight) * 100).toFixed(2);
-      const boostedPct = ((weights[rarity] / totalWeight) * 100).toFixed(2);
-      console.log(
-        `  ${rarity}: ${normalPct}% → ${boostedPct}%`
-      );
-    }
-
-    // Normalize and pick a rarity
-    let rand = Math.random() * totalWeight;
-    let chosenRarity = "common";
-    for (const [rarity, w] of Object.entries(weights)) {
-      if (!byRarity[rarity]?.length) continue;
-      if (rand < w) {
-        chosenRarity = rarity;
-        break;
-      }
-      rand -= w;
-    }
-
-    // Pick a random Pokémon from that rarity
-    const pool = byRarity[chosenRarity];
-    const pokemon = pool[Math.floor(Math.random() * pool.length)];
-
-    // If rare or higher, add to log and broadcast
-    const rareLevels = ["common", "rare", "wild", "legendary", "mythical"];
-    if (rareLevels.includes(pokemon.rarity)) {
-      let username = userId;
-      try {
-        const userPath = path.resolve("data/playerdata", `${userId}.json`);
-        console.log("[/api/roll] Looking for user file at:", userPath);
-        const userJson = await fs.readFile(userPath, "utf-8");
-        const user = JSON.parse(userJson);
-        if (user && user.discordId) username = user.discordId;
-        console.log("[/api/roll] Found user, using discordId:", username);
-      } catch (e) {
-        console.warn("[/api/roll] Could not read user file or parse discordId, using userId:", userId, "Error:", e.message);
-      }
-      const logEntry = {
-        username,
-        dexNumber: pokemon.dexNumber,
-        name: pokemon.name,
-        rarity: pokemon.rarity,
-        timestamp: Date.now()
-      };
-      rollLog.push(logEntry);
-      if (rollLog.length > MAX_LOG) rollLog.shift();
-      console.log("[/api/roll] Broadcasting roll log entry:", logEntry);
-      try {
-        broadcastRollLog(logEntry);
-      } catch (wsErr) {
-        console.error("[/api/roll] Error broadcasting roll log:", wsErr);
+    // Build weighted pool
+    let pool = [];
+    for (const rarity in byRarity) {
+      for (let i = 0; i < Math.round(weights[rarity]); i++) {
+        pool = pool.concat(byRarity[rarity]);
       }
     }
+    if (pool.length === 0) {
+      return res.status(500).json({ error: "No Pokémon available to roll" });
+    }
 
-    res.json({ pokemon });
+    // Select Pokémon
+    const rolled = weightedRandomPokemon(pool);
+
+    // Log and broadcast
+    const logEntry = {
+      userId,
+      pokemon: rolled,
+      timestamp: Date.now(),
+      luckMultiplier
+    };
+    rollLog.push(logEntry);
+    if (rollLog.length > MAX_LOG) rollLog.shift();
+    broadcastRollLog(logEntry);
+
+    res.json({ rolled });
   } catch (err) {
-    console.error("[/api/roll] Unexpected error:", err);
-    res.status(500).json({ error: "Roll failed" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// GET /roll/log
+// GET /roll/log - Get roll log
 router.get("/log", (req, res) => {
   res.json({ log: rollLog });
 });

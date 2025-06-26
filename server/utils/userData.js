@@ -1,33 +1,32 @@
+// --- User Data Utilities ---
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const DATA_DIR = path.resolve(__dirname, "../data/playerdata");
 
+// Get the file path for a user's data
 function getUserFilePath(discordId) {
   return path.join(DATA_DIR, `${discordId}.json`);
 }
 
+// Get user data, or default if not found
 export function getUserData(discordId) {
   const filePath = getUserFilePath(discordId);
   if (!fs.existsSync(filePath)) {
-    // Return default user data if not found
     return {
       discordId,
       collection: [],
       power: 0,
       rubies: 0,
       avatar: null,
-      activeBoosts: [], // <-- ensure this is always present
+      activeBoosts: [],
     };
   }
   const raw = fs.readFileSync(filePath, "utf-8");
   const data = JSON.parse(raw);
-
-  // Ensure all default fields are present for existing users
   return {
     discordId,
     collection: Array.isArray(data.collection) ? data.collection : [],
@@ -35,11 +34,11 @@ export function getUserData(discordId) {
     rubies: data.rubies || 0,
     avatar: data.avatar || null,
     activeBoosts: Array.isArray(data.activeBoosts) ? data.activeBoosts : [],
-    // add other fields as needed
-    ...data // spread last to preserve any extra fields
+    ...data
   };
 }
 
+// Save user data to file
 export function saveUserData(discordId, data) {
   const filePath = getUserFilePath(discordId);
   const dataToSave = {
@@ -50,14 +49,15 @@ export function saveUserData(discordId, data) {
   fs.writeFileSync(filePath, JSON.stringify(dataToSave, null, 2), "utf-8");
 }
 
+// Update user data with partial updates
 export function updateUserData(discordId, updates) {
   const data = getUserData(discordId);
-  // Always ensure discordId is present
   const newData = { ...data, ...updates, discordId };
   saveUserData(discordId, newData);
   return newData;
 }
 
+// Get all users' data
 export function getAllUsers() {
   const files = fs.readdirSync(DATA_DIR);
   return files.map(file => {
@@ -66,6 +66,7 @@ export function getAllUsers() {
   });
 }
 
+// Claim a Pokémon for a user
 export function claimPokemon(discordId, pokemon) {
   const data = getUserData(discordId);
   let found = false;
@@ -88,125 +89,85 @@ export function claimPokemon(discordId, pokemon) {
   return newData;
 }
 
+// Discard a Pokémon from a user's collection
 export function discardPokemon(discordId, dexNumber, amount = 1) {
   const data = getUserData(discordId);
   let updatedCollection = Array.isArray(data.collection) ? [...data.collection] : [];
-  let found = false;
-  updatedCollection = updatedCollection.map(poke => {
-    if (poke.dexNumber === dexNumber && !found) {
-      found = true;
-      const newAmount = (poke.amount || 1) - amount;
-      if (newAmount > 0) {
-        return { ...poke, amount: newAmount };
-      }
-      // If newAmount <= 0, we'll filter it out below
-      return null;
+  updatedCollection = updatedCollection.map(p => {
+    if (p.dexNumber === dexNumber) {
+      return { ...p, amount: Math.max(0, (p.amount || 1) - amount) };
     }
-    return poke;
-  }).filter(Boolean);
-
+    return p;
+  }).filter(p => p.amount > 0);
   const newData = { ...data, collection: updatedCollection };
   saveUserData(discordId, newData);
   return newData;
 }
 
+// Set a user's avatar Pokémon
 export function setAvatar(discordId, dexNumber, avatarImage) {
   const data = getUserData(discordId);
-  const newData = {
-    ...data,
-    avatarDexNumber: dexNumber,
-    avatarImage: avatarImage || (data.collection.find(p => p.dexNumber === dexNumber)?.image)
-  };
+  const newData = { ...data, avatarDexNumber: dexNumber, avatarImage };
   saveUserData(discordId, newData);
   return newData;
 }
 
+// Sell a Pokémon from a user's collection
 export function sellPokemon(discordId, dexNumber, amount = 1) {
   const data = getUserData(discordId);
   let updatedCollection = Array.isArray(data.collection) ? [...data.collection] : [];
-  let found = false;
-  let sellPower = 0;
-  updatedCollection = updatedCollection.map(poke => {
-    if (poke.dexNumber === dexNumber && !found) {
-      found = true;
-      const newAmount = (poke.amount || 1) - amount;
-      sellPower = (poke.power || 0) * Math.min(amount, poke.amount || 1);
-      if (newAmount > 0) {
-        return { ...poke, amount: newAmount };
-      }
-      // If newAmount <= 0, we'll filter it out below
-      return null;
+  let rubies = data.rubies || 0;
+  let sold = false;
+  updatedCollection = updatedCollection.map(p => {
+    if (p.dexNumber === dexNumber && (p.amount || 1) >= amount) {
+      sold = true;
+      rubies += (p.power || 1) * amount;
+      return { ...p, amount: (p.amount || 1) - amount };
     }
-    return poke;
-  }).filter(Boolean);
-
-  const newRubies = (data.rubies || 0) + sellPower;
-  const newData = { ...data, collection: updatedCollection, rubies: newRubies };
+    return p;
+  }).filter(p => p.amount > 0);
+  if (!sold) return data;
+  const newData = { ...data, collection: updatedCollection, rubies };
   saveUserData(discordId, newData);
   return newData;
 }
 
-/**
- * Adds or extends a boost for a user.
- * @param {string} discordId
- * @param {object} boost - { id, type, multiplier, duration (seconds) }
- * @returns {object} updated user data
- */
-export function addOrExtendBoost(discordId, boost) {
+// Add or extend a boost for a user
+export function addOrExtendBoost(discordId, boost, quantity = 1) {
   const data = getUserData(discordId);
-  const now = Date.now();
-  let boosts = Array.isArray(data.activeBoosts) ? [...data.activeBoosts] : [];
-
-  // Find existing boost of same type and multiplier
-  const idx = boosts.findIndex(
-    b => b.type === boost.type && b.multiplier === boost.multiplier
-  );
-
-  const durationMs = (boost.duration || 0) * 1000;
-  if (idx !== -1) {
-    // Extend expiry
-    boosts[idx].expiresAt = Math.max(boosts[idx].expiresAt, now) + durationMs;
-  } else {
-    // Add new boost
-    boosts.push({
-      id: boost.id,
-      type: boost.type,
-      multiplier: boost.multiplier,
-      expiresAt: now + durationMs
+  let rubies = data.rubies || 0;
+  const totalCost = boost.price * quantity;
+  if (rubies < totalCost) return data;
+  rubies -= totalCost;
+  let activeBoosts = Array.isArray(data.activeBoosts) ? [...data.activeBoosts] : [];
+  let found = false;
+  for (let i = 0; i < activeBoosts.length; i++) {
+    if (activeBoosts[i].id === boost.id) {
+      activeBoosts[i] = {
+        ...activeBoosts[i],
+        expiresAt: activeBoosts[i].expiresAt + boost.duration * 1000 * quantity
+      };
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    activeBoosts.push({
+      ...boost,
+      expiresAt: Date.now() + boost.duration * 1000 * quantity
     });
   }
-
-  const newData = { ...data, activeBoosts: boosts };
+  const newData = { ...data, activeBoosts, rubies };
   saveUserData(discordId, newData);
   return newData;
 }
 
-/**
- * Removes expired boosts for a user.
- * @param {string} discordId
- * @returns {object} updated user data
- */
+// Remove expired boosts from a user's data
 export function removeExpiredBoosts(discordId) {
   const data = getUserData(discordId);
   const now = Date.now();
-  const boosts = (data.activeBoosts || []).filter(
-    b => b.expiresAt > now
-  );
-  if (boosts.length !== (data.activeBoosts || []).length) {
-    const newData = { ...data, activeBoosts: boosts };
-    saveUserData(discordId, newData);
-    return newData;
-  }
-  return data;
-}
-
-// New function to handle boost purchase
-export function purchaseBoost(userId, boostDef, quantity, totalPrice) {
-  let user = getUserData(userId);
-  user.rubies -= totalPrice;
-  for (let i = 0; i < quantity; i++) {
-    addOrExtendBoost(userId, boostDef); // <-- no 'let' here!
-  }
-  saveUserData(userId, user);
-  return { success: true, rubies: user.rubies, activeBoosts: user.activeBoosts };
+  const activeBoosts = (data.activeBoosts || []).filter(b => b.expiresAt > now);
+  const newData = { ...data, activeBoosts };
+  saveUserData(discordId, newData);
+  return newData;
 }
